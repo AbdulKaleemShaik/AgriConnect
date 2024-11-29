@@ -1,0 +1,166 @@
+.customer_register {
+  padding: 20px;
+  max-width: 650px;
+  height: 100%;
+  margin: 0 auto;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  background-color: rgba(230, 230, 230, 0.6);
+  margin-top: 50px;
+  background-color: #f9f9f9;
+}
+
+.body {
+  background-color: #f9f9f9;
+}
+
+.inputs select {
+  margin-top: 15px;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.inputs select:focus {
+  border-color: #4CAF50;
+  outline: none;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+
+.basket {
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  top: 70%;
+  left: 0;
+  bottom: 0;
+}
+
+.customer_register h2 {
+  text-align: center;
+  color: #ff9933;
+  font-size: 25px;
+  margin-bottom: 0px;
+}
+
+.customer_register form {
+  display: flex;
+  flex-direction: column;
+}
+
+.customer_register label {
+  margin-bottom: 5px;
+  color: #000000;
+  font-size: 1.22rem;
+  padding-top: 25px;
+}
+
+.customer_register input {
+  padding: 8px;
+  font-size: 16px;
+  margin-top: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%;
+}
+
+.inputs {
+  display: flex;
+  flex-direction: column;
+  font-size: 1.3rem;
+}
+
+.labels {
+  display: flex;
+  flex-direction: column;
+}
+
+.inputs_labels {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.customer_register button {
+  padding: 10px;
+  font-size: 18px;
+  background-color: #ff9933;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 150px;
+  margin: 20px auto;
+}
+
+.customer_register input:focus {
+  outline: none;
+  border-color: #ff9933;
+}
+
+.register_button:hover {
+  background-color: #e68a00;
+}
+
+/* Responsive Design */
+@media (max-width: 912px) {
+  .customer_register {
+      padding: 15px;
+      max-width: 90%; /* Adjusted to take up more space on smaller screens */
+      margin-top: 20px;
+  }
+
+  .customer_register h2 {
+      font-size: 22px; /* Adjusted font size for smaller screens */
+  }
+
+  .customer_register input {
+      font-size: 14px; /* Smaller font size for inputs on smaller screens */
+      padding: 6px; /* Reduced padding for inputs */
+  }
+
+  .customer_register button {
+      width: 100%; /* Button takes full width */
+      font-size: 16px;
+      padding: 12px;
+      margin: 20px 0;
+  }
+
+  .inputs_labels {
+      flex-direction: column; /* Stack labels and inputs vertically */
+  }
+
+  .basket {
+      width: 200px; /* Adjusted size of the image for smaller screens */
+      height: 200px;
+      top: 80%;
+  }
+}
+
+@media (max-width: 768px) {
+  .customer_register {
+      padding: 10px;
+      margin-top: 15px;
+  }
+
+  .customer_register h2 {
+      font-size: 20px;
+  }
+
+  .customer_register input {
+      font-size: 13px;
+      padding: 5px;
+  }
+
+  .customer_register button {
+      font-size: 14px;
+      padding: 10px;
+  }
+
+  .basket {
+      width: 150px;
+      height: 150px;
+  }
+}

@@ -1,0 +1,212 @@
+.dashboard {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #f5f5f5;
+}
+
+.navbar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  padding: 10px 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+}
+
+.navItems {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.navItems li {
+  cursor: pointer;
+}
+
+.userGreeting {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.imageContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.imageContainer img {
+  margin-top: 30px;
+  width: 90%;
+  max-width: 5000px; /* Consider limiting this for responsiveness */
+  height: auto; /* Change height to auto for better aspect ratio handling */
+}
+
+.featuresSection {
+  width: 90%;
+  max-width: 1200px;
+  text-align: center;
+  margin-top: 50px;
+}
+
+.featuresSection h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.featuresHighlight {
+  color: #4CAF50;
+}
+
+.features {
+  display: flex;
+  justify-content: space-around;
+  gap: 20px;
+  flex-wrap: wrap; /* Allow wrapping for responsiveness */
+}
+
+.featureCard {
+  width: 30%;
+  background-color: #fff;
+  padding: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 20px; /* Add margin for spacing */
+}
+
+.featureCard img {
+  width: 150px;
+  height: 150px;
+  margin-bottom: 10px;
+}
+
+.featureCard h3 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.featureCard p {
+  font-size: 1rem;
+  color: #777;
+}
+
+.footer {
+  width: 100%;
+  color: black;
+  text-align: center;
+  padding: 20px;
+  margin-top: 50px;
+  position: relative;
+  bottom: 0;
+}
+
+.footer p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.socialLinks {
+  margin-top: 10px;
+}
+
+.socialLinks a {
+  color: black;
+  margin: 0 10px;
+  text-decoration: none;
+}
+
+.socialLinks a:hover {
+  text-decoration: underline;
+}
+
+/* Responsiveness */
+
+/* Large Tablets / Small Desktops (up to 1200px) */
+@media (max-width: 1200px) {
+  .navItems {
+      font-size: 18px; /* Slightly smaller font size for nav items */
+      gap: 15px; /* Reduce gap between nav items */
+  }
+
+  .features {
+      justify-content: center; /* Center the features section */
+  }
+
+  .featureCard {
+      width: 45%; /* Reduce card width */
+  }
+
+  .footer {
+      font-size: 0.9rem; /* Slightly smaller footer font size */
+  }
+}
+
+/* Tablets (up to 768px) */
+@media (max-width: 768px) {
+  .navItems {
+      flex-direction: column; /* Stack nav items vertically */
+      gap: 10px; /* Reduce gap */
+  }
+
+  .features {
+      flex-direction: column; /* Stack feature cards vertically */
+      align-items: center; /* Center items */
+  }
+
+  .featureCard {
+      width: 80%; /* Reduce card width */
+  }
+
+  .footer {
+      font-size: 0.8rem; /* Smaller footer font size */
+  }
+}
+
+/* Mobile Phones (up to 480px) */
+@media (max-width: 480px) {
+  .navbar {
+      flex-direction: column; /* Stack navbar items vertically */
+      align-items: flex-start; /* Align items to the start */
+      padding: 10px; /* Adjust padding */
+  }
+
+  .logo {
+      font-size: 1.25rem; /* Smaller logo size */
+  }
+
+  .userGreeting {
+      font-size: 18px; /* Smaller greeting size */
+  }
+
+  .featuresSection h2 {
+      font-size: 1.5rem; /* Smaller title size */
+  }
+
+  .featureCard {
+      width: 100%; /* Full width for feature cards */
+  }
+
+  .footer {
+      font-size: 0.7rem; /* Even smaller footer font size */
+  }
+
+  .imageContainer img {
+      width: 100%; /* Full width for images */
+      height: auto; /* Maintain aspect ratio */
+  }
+}

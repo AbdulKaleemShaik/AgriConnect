@@ -1,0 +1,241 @@
+.navbar {
+  padding: 7px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-left: 9px;
+  margin-right: 26px;
+}
+
+.logo {
+  width: 150px;
+  text-decoration: none;
+}
+
+.navbarMenu {
+  display: flex;
+  list-style: none;
+  gap: 20px;
+}
+
+h2 {
+  text-decoration: none;
+  margin: 0;
+}
+
+a {
+  text-decoration: none;
+}
+
+.navbarMenu a {
+  font-size: 18px;
+  color: #49557e;
+  padding: 8px 12px;
+  border-radius: 4px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.navProfileDropdown {
+  position: absolute;
+  display: none;
+  right: 0;
+  z-index: 1000;
+  background-color: #ffffff;
+  border: 1px solid #ff6347;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
+  min-width: 180px;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.navbarProfile:hover .navProfileDropdown {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.navProfileDropdown li {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  cursor: pointer;
+  gap: 10px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.navProfileDropdown p {
+  color: #333;
+  font-size: 16px;
+  margin: 0;
+}
+
+.navProfileDropdown li:hover {
+  background-color: #bebbba;
+  color: white;
+}
+
+.navProfileDropdown img {
+  width: 24px;
+  height: 24px;
+}
+
+.navProfileDropdown hr {
+  border: none;
+  border-top: 1px solid #ff6347;
+  margin: 8px 0;
+}
+
+.navbarMenu a:hover {
+  color: #ff6347;
+}
+
+.navbarMenu a::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background-color: #ff6347;
+  transition: all 0.3s ease;
+}
+
+.navbarMenu a:hover::after {
+  width: 100%;
+  left: 0;
+}
+
+.active {
+  color: #ff6347;
+  font-weight: bold;
+}
+
+.navbarRight {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.loginsignup a {
+  font-size: 18px;
+  color: #49557e;
+  padding: 8px 12px;
+  border-radius: 4px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.loginsignup a:hover {
+  color: #ff6347;
+}
+
+.navbarMenuToggle {
+  cursor: pointer;
+  font-size: 24px;
+  display: none; /* Hide by default */
+  
+}
+
+.menuicon {
+  display: none;
+  background-color:black 
+}
+.dropdownMenu {
+  position: absolute;
+  background-color: #fff;
+  border: 1px solid #ff6347;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  width: 200px; /* Adjust as needed */
+}
+
+@media (max-width: 1050px) {
+  .logo {
+    width: 140px;
+  }
+
+  .navbarMenu {
+    gap: 20px;
+    font-size: 17px;
+  }
+
+  .navbarRight {
+    gap: 30px;
+  }
+
+  .navbarRight img {
+    width: 22px;
+  }
+}
+
+@media (max-width: 900px) {
+  .logo {
+    width: 120px;
+  }
+
+  .navbarMenu {
+    gap: 15px;
+    font-size: 16px;
+  }
+
+  .navbarRight {
+    gap: 20px;
+  }
+
+  .navbarRight img {
+    width: 20px;
+  }
+}
+
+@media (max-width: 750px) {
+  .navbarMenu {
+    display: none; /* Hide original menu on small screens */
+  }
+
+  .navbarMenu.show {
+    display: flex; /* Show menu when isDropdownOpen is true */
+    flex-direction: column; /* Stack the menu items */
+    position: absolute; /* Position dropdown */
+    background: white; /* Background color */
+    top: 50px; /* Adjust based on your navbar height */
+    left: 0; /* Align to the left */
+    width: 100%; /* Full width */
+    border: 1px solid #ff6347; /* Border */
+    border-radius: 8px; /* Rounded corners */
+    z-index: 999; /* Above other elements */
+  }
+
+  .navbarMenuToggle {
+    display: block; /* Show menu toggle */
+  }
+
+  .navbarRight {
+    display: none; /* Hide right section on small screens */
+  }
+}
+
+.profileImage {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.navbarSearchIcon .dot {
+  position: absolute;
+  min-width: 10px;
+  min-height: 10px;
+  background-color: tomato;
+  border-radius: 50%;
+  top: 18px;
+  right: 74px;
+}

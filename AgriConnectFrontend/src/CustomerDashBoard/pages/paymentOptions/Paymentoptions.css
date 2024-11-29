@@ -1,0 +1,349 @@
+
+.payment-options-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background-color: #f5f5f5;
+    height: 100vh;
+  }
+  
+  .payment-options-container h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .payment-options {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 30px;
+  }
+  
+  .payment-options button {
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease, transform 0.2s;
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
+    width: 150px;
+    text-align: center;
+  }
+  
+  .payment-options button:hover {
+    background-color: #e07a77;
+    color: white;
+    transform: scale(1.05);
+  }
+  
+  .proceed-button {
+    padding: 15px 40px;
+    background-color:  #d9534f;
+    color: white;
+    font-size: 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s;
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
+  }
+  
+  .proceed-button:hover {
+    background-color: #e60000;
+    transform: scale(1.05);
+  }
+  
+  /* Modal styling */
+  .phonepe-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .phonepe-modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .phonepe-modal-content h3 {
+    margin-bottom: 20px;
+    font-size: 20px;
+  }
+  
+  .phonepe-modal-content input {
+    padding: 10px;
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    margin-bottom: 20px;
+    font-size: 16px;
+  }
+  
+  .phonepe-submit-button {
+    padding: 12px 25px;
+    background-color:  #d9534f;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .phonepe-submit-button:hover {
+    background-color:  #d9534f;
+  }
+  /* General modal styling */
+.card-modal, .phonepe-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensures it is on top of other elements */
+  }
+  
+  /* Modal content box */
+  .card-modal-content, .phonepe-modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+  }
+  
+  .card-modal-content h3, .phonepe-modal-content h3 {
+    margin-bottom: 20px;
+    font-size: 1.5em;
+  }
+  
+  .card-modal-content input, .phonepe-modal-content input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
+  
+  .card-modal-content input[type="text"] {
+    font-size: 1em;
+  }
+  
+  /* Submit button inside modal */
+  .card-submit-button, .phonepe-submit-button {
+    background-color:  #d9534f;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    width: 100%;
+    transition: background-color 0.3s ease;
+  }
+  
+  .card-submit-button:hover, .phonepe-submit-button:hover {
+    background-color:  #d9534f;
+  }
+  
+  /* Ensure the modal closes on background click (optional) */
+  .card-modal {
+    cursor: pointer;
+  }
+  
+  .card-modal-content {
+    cursor: auto;
+  }
+  /* General modal styling */
+.card-modal, .phonepe-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensures it is on top of other elements */
+  }
+  
+  /* Modal content box */
+  .card-modal-content, .phonepe-modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    position: relative; /* Positioning for close button */
+  }
+  
+  .card-modal-content h3, .phonepe-modal-content h3 {
+    margin-bottom: 20px;
+    font-size: 1.5em;
+  }
+  
+  /* Input fields inside modal */
+  .card-modal-content input, .phonepe-modal-content input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
+  
+  .card-modal-content input[type="text"] {
+    font-size: 1em;
+  }
+  
+  /* Submit button inside modal */
+  .card-submit-button, .phonepe-submit-button {
+    background-color: #d9534f;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    width: 100%;
+    transition: background-color 0.3s ease;
+  }
+  
+  .card-submit-button:hover, .phonepe-submit-button:hover {
+    background-color: #d9534f;
+  }
+  
+  /* Close button styling */
+  .close-modal-button {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #333;
+  }
+  
+  .close-modal-button:hover {
+    color: #ff0000; /* Hover effect to make it red */
+  }
+  /* General modal styling */
+.card-modal, .phonepe-modal, .success-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensures it is on top of other elements */
+  }
+  
+  /* Modal content box */
+  .card-modal-content, .phonepe-modal-content, .success-modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    position: relative; /* Positioning for close button */
+  }
+  
+  .card-modal-content h3, .phonepe-modal-content h3, .success-modal-content h3 {
+    margin-bottom: 20px;
+    font-size: 1.5em;
+  }
+  
+  /* Input fields inside modal */
+  .card-modal-content input, .phonepe-modal-content input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
+  
+  .card-modal-content input[type="text"] {
+    font-size: 1em;
+  }
+  
+  /* Submit button inside modal */
+  .card-submit-button, .phonepe-submit-button {
+    background-color:  #d9534f;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    width: 100%;
+    transition: background-color 0.3s ease;
+  }
+  
+  .card-submit-button:hover, .phonepe-submit-button:hover {
+    background-color:  #d9534f;
+  }
+  
+  /* Close button styling */
+  .close-modal-button {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #333;
+  }
+  
+  .close-modal-button:hover {
+    color: #ff0000; /* Hover effect to make it red */
+  }
+  
+  /* Success modal content styling */
+  .success-modal-content {
+    text-align: center;
+  }
+  
+  .success-modal-content p {
+    font-size: 1.2em;
+    color: #4CAF50;
+    margin: 20px 0;
+  }
+  
+  

@@ -1,0 +1,119 @@
+/* Container Styling */
+.container {
+  background-color: #ffffff; /* White background */
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* Heading */
+h2 {
+  color: #333; /* Dark grey for heading */
+  text-align: center;
+  margin-bottom: 30px;
+  font-weight: bold;
+}
+
+/* Table Styling */
+.table-bordered {
+  border: 2px solid #ddd;
+}
+
+.table-bordered th {
+  background-color: #343a40;
+  color: white;
+  text-align: center;
+}
+
+.table-bordered td {
+  padding: 15px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f9f9f9; /* Soft hover effect */
+}
+
+/* Product Image */
+.product-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.cancle_button{
+  background-color: orange; 
+  color: black;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  cursor: pointer;
+}
+
+.cancle_button:hover {
+  background-color: #ffaa00; /* Darker green */
+  transform: scale(1.05); /* Slight zoom on hover */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Elevate on hover */
+}
+.view_status_button {
+  background-color: #d9534f; 
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  cursor: pointer;
+}
+
+.view_status_button:hover {
+  background-color: #ff3700; /* Darker green */
+  transform: scale(1.05); /* Slight zoom on hover */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Elevate on hover */
+}
+
+.view_status_button:active {
+  background-color: #388e3c; /* Even darker green when active */
+}
+
+/* Status Badge Colors */
+.badge-warning {
+  background-color: #f0ad4e; /* Orange */
+  padding: 5px 10px;
+  color: white;
+  border-radius: 5px;
+}
+
+.badge-success {
+  background-color: #5cb85c; /* Green */
+  padding: 5px 10px;
+  color: white;
+  border-radius: 5px;
+}
+
+.badge-danger {
+  background-color: #d9534f; /* Red */
+  padding: 5px 10px;
+  color: white;
+  border-radius: 5px;
+}
+
+/* Spinner */
+.spinner-border {
+  margin: 20px auto;
+  display: block;
+}
+
+/* Error message styling */
+.alert-danger {
+  color: #d9534f;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  text-align: center;
+}

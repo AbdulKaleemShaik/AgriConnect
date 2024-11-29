@@ -1,0 +1,116 @@
+/* Form container styling */
+.form {
+  display: flex;
+  flex-direction: column;
+  max-width: 450px; /* Maximum width for larger screens */
+  margin: 50px auto;
+  padding: 25px;
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.form:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Heading styling */
+h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #222;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+/* Label styling */
+.label {
+  margin-bottom: 12px;
+  font-weight: 600;
+  font-size: 15px;
+  color: #555;
+}
+
+/* Input, Select, and Textarea styling */
+.input,
+.select,
+.inputFile,
+.textarea {
+  width: 100%; /* Full width for all screen sizes */
+  padding: 12px;
+  margin-top: 6px;
+  margin-bottom: 20px;
+  border: 1px solid #d1d1d1;
+  border-radius: 6px;
+  font-size: 15px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input:focus,
+.select:focus,
+.inputFile:focus,
+.textarea:focus {
+  border-color: green; /* Fixed typo here (it was '#green') */
+  box-shadow: 0 0 6px rgba(0, 123, 255, 0.3);
+}
+
+/* Textarea specific styling */
+.textarea {
+  height: 120px;
+  resize: vertical;
+}
+
+/* File input specific styling */
+.inputFile {
+  padding: 8px;
+}
+
+/* Button styling */
+.button {
+  padding: 12px 0;
+  background-color: green;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.button:hover {
+  background-color: #0056b3;
+  box-shadow: 0 4px 8px rgba(0, 91, 179, 0.2);
+}
+
+/* Center content when the form is hovered */
+.form:hover .button {
+  transform: translateY(-2px);
+}
+
+.button:active {
+  transform: translateY(0);
+}
+
+/* Responsive Styles */
+@media (max-width: 600px) {
+  .form {
+    padding: 15px; /* Reduce padding for smaller screens */
+    margin: 20px; /* Reduce margin for smaller screens */
+    max-width: 90%; /* Allow form to take more width on smaller screens */
+  }
+
+  h2 {
+    font-size: 20px; /* Reduce heading font size for smaller screens */
+    margin-bottom: 20px; /* Reduce margin */
+  }
+
+  .label,
+  .input,
+  .select,
+  .textarea,
+  .button {
+    font-size: 14px; /* Slightly smaller font size */
+  }
+}

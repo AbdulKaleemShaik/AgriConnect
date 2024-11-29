@@ -1,0 +1,39 @@
+.container {
+    padding: 20px;
+    background-color: #f4f4f9;
+    color: #2e7d32;
+  }
+  
+  h1 {
+    text-align: center;
+    color: #2e7d32;
+  }
+  
+  .filterContainer {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+  }
+  
+  .filterItem {
+    width: 200px;
+  }
+  
+  .searchButton {
+    background-color: #4caf50;
+    color: white;
+  }
+  
+  .MuiTable-root {
+    background-color: #ffffff;
+  }
+  
+  .MuiTableCell-root {
+    text-align: center;
+    color: #2e7d32;
+  }
+  
+  .MuiTableHead-root {
+    background-color: #e8f5e9;
+  }
+  

@@ -1,0 +1,73 @@
+.container {
+  width: 90%;
+  margin: auto;
+  padding: 20px;
+}
+
+h2 {
+  text-align: center;
+  color: #4caf50;
+}
+
+.productList {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.productCard {
+  width: 250px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.productImage {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.productInfo {
+  padding: 15px;
+}
+
+.productInfo h3 {
+  font-size: 1.2em;
+  color: #333;
+}
+
+.productInfo p {
+  font-size: 0.9em;
+  color: #777;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 10px;
+}
+
+.editBtn, .deleteBtn {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.editBtn {
+  background-color: #4caf50;
+  color: white;
+}
+
+.deleteBtn {
+  background-color: #f44336;
+  color: white;
+}
+
+.editBtn:hover, .deleteBtn:hover {
+  opacity: 0.8;
+}

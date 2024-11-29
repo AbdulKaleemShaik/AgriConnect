@@ -1,0 +1,138 @@
+.start {
+    text-align: center;
+    background-image: url(../assets/Images/bck.jpg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-left: 80px;
+    margin-top: 40px;
+    width: 90%;
+    height: 60vh;
+    padding: 20px;
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Added shadow for depth */
+    backdrop-filter: blur(5px); /* Added blur for a modern look */
+}
+
+.wel {
+    font-size: 48px;
+    font-family: 'Roboto', sans-serif; /* Changed to a modern, professional font */
+    font-weight: 700;
+    margin-bottom: 20px;
+    letter-spacing: 1.5px;
+    color: #fff;
+}
+
+p {
+    font-size: 18px;
+    font-family: 'Open Sans', sans-serif;
+    margin-bottom: 30px;
+}
+
+.button {
+    padding: 12px 25px;
+    font-size: 18px;
+    font-family: 'Roboto', sans-serif;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Added shadow for button */
+}
+
+.buttonGreen {
+    background: lawngreen; /* Added gradient */
+    color: #000000;
+}
+
+.buttonGreen:hover {
+    color: white;
+    background: linear-gradient(45deg, #218838, #28a745); /* Hover gradient effect */
+    transform: scale(1.05); /* Slight scaling on hover */
+}
+
+#jj {
+    color: white;
+}
+
+.side {
+    margin-bottom: 15px;
+}
+
+.buttonGrey {
+    background-color: #6c757d; /* Used a modern grey */
+    color: #000000;
+}
+
+.buttonGrey:hover {
+    color: white;
+    background-color: #5a6268; /* Darker shade on hover */
+    transform: scale(1.05);
+}
+
+/* Responsiveness */
+@media (max-width: 1200px) {
+    .start {
+        margin-left: 40px;
+        height: 50vh;
+    }
+    
+    .wel {
+        font-size: 42px;
+    }
+
+    p {
+        font-size: 16px;
+    }
+
+    .button {
+        padding: 10px 20px;
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .start {
+        margin-left: 20px;
+        height: 45vh;
+    }
+    
+    .wel {
+        font-size: 36px;
+    }
+
+    p {
+        font-size: 14px;
+    }
+
+    .button {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .start {
+        margin-left: 0;
+        height: 40vh;
+        width: 100%;
+        padding: 15px;
+    }
+    
+    .wel {
+        font-size: 28px;
+    }
+
+    p {
+        font-size: 12px;
+    }
+
+    .button {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+}

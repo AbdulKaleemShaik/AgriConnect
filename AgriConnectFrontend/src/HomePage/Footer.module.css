@@ -1,0 +1,73 @@
+.footer {
+  background-color: rgb(31, 29, 29);
+  color: #fff;
+  padding: 40px 20px; /* Increased padding for better spacing */
+  text-align: center;
+  width: 100%;
+}
+
+.container {
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px; /* Added max-width for better alignment */
+}
+
+.headerContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.socialIcons {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.socialIcon {
+  width: 40px; /* Increased size for better visibility */
+  height: 40px; /* Added height for consistent sizing */
+  background-color: rgb(68, 224, 68);
+  border-radius: 50%;
+  margin: 0 15px; /* Adjusted spacing */
+  transition: transform 0.3s ease; /* Added transition for hover effect */
+}
+
+.socialIcon:hover {
+  transform: scale(1.1); /* Slightly enlarge on hover */
+}
+
+.navList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 20px; /* Added margin for spacing */
+}
+
+.navLink {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  margin: 0 15px; /* Adjusted spacing */
+  transition: color 0.3s ease; /* Added transition for hover effect */
+}
+
+.navLink:hover {
+  color: #ccc;
+}
+
+.fo {
+  margin-top: 20px;
+}
+
+.textMuted {
+  margin: 5px 0; /* Added vertical margin for spacing */
+  color: #ccc;
+  font-size: 14px; /* Adjusted font size for readability */
+}

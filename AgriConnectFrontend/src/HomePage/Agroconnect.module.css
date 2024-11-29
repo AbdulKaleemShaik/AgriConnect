@@ -1,0 +1,86 @@
+/* Agroconnect.module.css */
+
+/* Container for the entire section */
+.agriConnectContainer {
+  margin: 50px 8% 0; /* Adjusted margin for better spacing */
+}
+
+/* Container for the information section */
+.agriConnectInfo {
+  margin-bottom: 30px; /* Reduced margin-bottom for a better look */
+}
+
+/* Flex container for the image sections */
+.imageContainer {
+  display: flex;
+  flex-wrap: wrap; /* Allow items to wrap to the next line */
+  justify-content: space-around; /* Distribute space evenly between items */
+  gap: 20px; /* Space between items */
+}
+
+/* Individual section styling */
+.div1 {
+  text-align: center;
+  flex: 1; /* Allow flex items to grow and shrink as needed */
+  max-width: 300px; /* Set a maximum width */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for better visual separation */
+  border-radius: 10px; /* Rounded corners for the section */
+  overflow: hidden; /* Ensure content does not overflow */
+  background-color: #fff; /* White background for the section */
+}
+
+/* Image styling */
+.sectionImage {
+  border-radius: 10px;
+  width: 100%; /* Make sure images fill the width of their container */
+  height: auto; /* Maintain aspect ratio */
+}
+
+/* Heading styling */
+h1 {
+  font-size: 2em; /* Responsive font size */
+  margin: 0 0 20px; /* Adjust margin */
+}
+
+/* Subheading styling */
+h3 {
+  font-size: 1.5em; /* Responsive font size */
+  margin: 20px 0; /* Adjust margin */
+}
+
+/* Description text styling */
+.description {
+  color: green;
+  font-size: 1em; /* Responsive font size */
+  margin: 10px 0; /* Adjust margin */
+}
+
+/* Margin bottom for paragraph */
+.marginBottom {
+  margin-bottom: 30px; /* Adjusted margin-bottom for consistency */
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .imageContainer {
+    flex-direction: column; /* Stack items vertically on smaller screens */
+    align-items: center; /* Center items horizontally */
+  }
+
+  .div1 {
+    max-width: 90%; /* Adjust max-width on smaller screens */
+    margin-bottom: 20px; /* Adjust bottom margin */
+  }
+
+  h1 {
+    font-size: 1.5em; /* Adjust heading size on smaller screens */
+  }
+
+  h3 {
+    font-size: 1.2em; /* Adjust subheading size on smaller screens */
+  }
+
+  .description {
+    font-size: 0.9em; /* Adjust description font size */
+  }
+}

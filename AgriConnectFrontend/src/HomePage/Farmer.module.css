@@ -1,0 +1,127 @@
+.textWrapper {
+  margin: 80px 90px 0 150px; /* Adjust margins for top, right, bottom, and left */
+  display: flex;
+  align-items: center; /* Align items vertically */
+  justify-content: space-between; /* Space out the image and text content */
+}
+
+.imageContainer {
+  margin-top: -50px;
+  flex: 0 0 200px;
+  height: 200px; /* Set height to match the image's round shape */
+  width: 200px; /* Set width to ensure it's round */
+  margin-right: 30px;
+  display: flex;
+  align-items: center; /* Center the image vertically */
+  justify-content: center; /* Center the image horizontally */
+  border-radius: 50%; /* Make the image round */
+  overflow: hidden; /* Hide any overflow */
+  border: 5px solid #ddd; /* Optional: Add border for better visibility */
+}
+
+.image {
+  width: 100%; /* Ensure image takes up full width of its container */
+  height: 100%; /* Ensure image takes up full height of its container */
+  object-fit: cover; /* Maintain aspect ratio while covering the container */
+}
+
+.textContent {
+  flex: 1; /* Allow text content to take remaining space */
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  align-items: center; /* Center content horizontally */
+  text-align: center; /* Center text */
+}
+
+.text {
+  color: green;
+  font-size: 16px; /* Make the text smaller */
+  line-height: 1.5; /* Improve readability */
+  margin-bottom: 20px; /* Space between text and button */
+}
+
+.lastButtonGreen {
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: rgb(3, 254, 3);
+  color: rgb(0, 0, 0);
+  display: inline-block; /* Ensure proper spacing around button */
+  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.lastButtonGreen:hover {
+  background-color: rgb(2, 200, 2); /* Darker green on hover */
+}
+
+/* Responsiveness */
+
+/* Large Tablets / Small Desktops (up to 1200px) */
+@media (max-width: 1200px) {
+  .textWrapper {
+    margin: 60px 40px 0 50px;
+    flex-direction: column; /* Stack image and text vertically */
+    align-items: center; /* Center items vertically */
+  }
+
+  .imageContainer {
+    height: 180px; /* Smaller image */
+    width: 180px;
+    margin-bottom: 20px;
+  }
+
+  .text {
+    font-size: 14px; /* Adjust text size for smaller screens */
+  }
+}
+
+/* Tablets (up to 768px) */
+@media (max-width: 768px) {
+  .textWrapper {
+    margin: 40px 30px 0 30px;
+    flex-direction: column; /* Stack image and text vertically */
+    align-items: center;
+  }
+
+  .imageContainer {
+    height: 150px; /* Further reduce image size */
+    width: 150px;
+    margin-bottom: 15px;
+  }
+
+  .text {
+    font-size: 12px; /* Smaller font for better readability */
+  }
+
+  .lastButtonGreen {
+    padding: 8px 16px; /* Reduce button padding */
+    font-size: 14px;
+  }
+}
+
+/* Mobile Phones (up to 480px) */
+@media (max-width: 480px) {
+  .textWrapper {
+    margin: 20px 15px 0 15px;
+    flex-direction: column; /* Stack image and text */
+    align-items: center;
+  }
+
+  .imageContainer {
+    height: 120px; /* Smaller round image */
+    width: 120px;
+    margin-bottom: 10px;
+  }
+
+  .text {
+    font-size: 10px; /* Smaller text for mobile */
+    margin-bottom: 15px;
+  }
+
+  .lastButtonGreen {
+    padding: 6px 12px; /* Smaller button for mobile */
+    font-size: 12px;
+  }
+}

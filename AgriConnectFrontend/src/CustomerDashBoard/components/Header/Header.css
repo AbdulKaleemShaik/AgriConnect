@@ -1,0 +1,64 @@
+.header {
+    height: 34vw;
+    margin: 30px auto;
+    background: url('/bgimage.jpg') no-repeat;
+    background-size: cover;
+    position: relative;
+    border-radius: 20px; /* Rounded corners */
+    overflow: hidden; /* Ensure content fits within rounded corners */
+}
+
+.header-contents {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5vw;
+    max-width: 50%;
+    bottom: 10%;
+    left: 6vw;
+    animation: fadeIn 3s;
+    color: white;
+}
+
+.header-contents h2 {
+    font-weight: 500;
+    color: white;
+    font-size: calc(2.5vw + 1rem); /* Responsive font size */
+}
+
+.header-contents p {
+    color: white;
+    font-size: calc(1vw + 0.2rem); /* Responsive font size */
+}
+
+.header-contents button {
+    border: none;
+    color: #747474;
+    font-weight: 500;
+    padding: 1vw 2.3vw;
+    background-color: white;
+    font-size: calc(1vw + 0.5rem); /* Responsive font size */
+    border-radius: 50px;
+    cursor: pointer;
+}
+
+@media (max-width:1050px) {
+    .header-contents {
+        max-width: 45%;
+    }
+}
+
+@media (max-width:750px) {
+    .header-contents {
+        max-width: 65%;
+    }
+
+    .header-contents p {
+        display: none;
+    }
+
+    .header-contents button {
+        padding: 2vw 4vw;
+    }
+}

@@ -1,0 +1,83 @@
+.container {
+  width: 50%; /* Default width for larger screens */
+  margin: auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup {
+  margin-bottom: 15px;
+}
+
+label {
+  font-size: 16px;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.inputs {
+  width: 100%; /* Full width for all screen sizes */
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+input[type="file"] {
+  margin-top: 10px;
+}
+
+.submitBtn {
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.submitBtn:hover {
+  background-color: #45a049;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .container {
+    width: 90%; /* Allow more width on smaller screens */
+    padding: 15px; /* Reduce padding for smaller screens */
+  }
+
+  label {
+    font-size: 14px; /* Slightly smaller font size */
+  }
+
+  .inputs,
+  .submitBtn {
+    font-size: 14px; /* Slightly smaller font size */
+    padding: 8px; /* Adjust padding for smaller elements */
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 10px; /* Further reduce padding for very small screens */
+  }
+
+  label {
+    font-size: 12px; /* Further reduce label font size */
+  }
+
+  .inputs,
+  .submitBtn {
+    font-size: 12px; /* Further reduce input/button font size */
+    padding: 6px; /* Further adjust padding */
+  }
+}

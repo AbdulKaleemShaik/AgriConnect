@@ -1,0 +1,28 @@
+.card {
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.title {
+  font-weight: bold;
+  color: #333;
+}
+
+.avatar {
+  border: 2px solid lightgreen;
+}
+
+.uploadBtn {
+  background-color: lightgreen;
+  color: white;
+}
+
+.submitBtn {
+  background-color: lightgreen;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.submitBtn:hover {
+  background-color: darkgreen;
+}

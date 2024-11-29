@@ -1,0 +1,78 @@
+.text-field input, .select-field select {
+  width: 100%; /* Ensure the input fields take full width */
+  box-sizing: border-box; /* Ensure padding and border are included in width */
+}
+
+.farmer_registration {
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  background-color: rgba(250, 250, 250, 0.9);
+  margin-top: 40px;
+}
+
+.lottieContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.farmer_registration h2 {
+  text-align: center;
+  color: #4caf50;
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+}
+
+.text-field, .select-field {
+  margin-top: 10px;
+}
+
+.text-field input, .select-field select {
+  transition: all 0.3s ease;
+}
+
+.text-field input:focus, .select-field select:focus {
+  border-color: #4caf50;
+}
+
+.farmer_registration input, .select-field select {
+  padding: 10px;
+  font-size: 1rem;
+  margin-top: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%;
+}
+
+.farmer_registration button {
+  padding: 12px;
+  font-size: 1rem;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 20px;
+  transition: background-color 0.3s ease;
+}
+
+.farmer_registration button:hover {
+  background-color: #388e3c;
+}
+
+.file-input {
+  margin-top: 15px;
+}
+
+@media (max-width: 768px) {
+  .text-field input, .select-field select {
+    width: 100%; /* Ensure inputs take full width on smaller screens */
+  }
+
+  .lottieContainer {
+    margin-bottom: 20px;
+  }
+}

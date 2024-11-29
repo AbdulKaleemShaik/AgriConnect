@@ -1,0 +1,206 @@
+.orderTrackingContainer {
+    padding: 35px;
+  }
+  
+  .header h2{
+    margin-bottom: 20px;
+    font-size: 20px;
+    padding-bottom: 20px;
+  }
+
+  .header h2 strong{
+    margin-bottom: 30px;
+
+    color:#ff4d4d
+  }
+
+  .header h1{
+    color: #ff4d4d;
+  }
+  
+  .orderInfo p {
+    margin: 5px 0;
+  }
+  .orderInfo h1{
+    color: #ff4d4d;
+  }
+
+  .productDetails h1{
+    color: #ff4d4d;
+  }
+  
+  .progressBarContainer {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .progressBar {
+    display: flex;
+    align-items: center;
+    column-gap: 70px;
+  }
+  
+  .stageContainer {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    position: relative;
+  }
+  
+  .stageCircle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ddd;
+    border: 2px solid #ddd;
+  }
+  
+  .active {
+    background-color: #ff4d4d;
+    border-color: #ff4d4d;
+  }
+  
+  .inactive {
+    background-color: #ddd;
+    border-color: #ddd;
+  }
+  
+  .stageLabel {
+    margin-top: 5px;
+    font-size: 12px;
+    color: #999;
+  }
+  
+  .activeLabel {
+    color: #333;
+  }
+  
+  .inactiveLabel {
+    color: #999;
+  }
+  
+  .line {
+    width: 100px;
+    height: 5px;
+    background-color: #ddd;
+    position: absolute;
+    top: 15px;
+  }
+  
+  .activeLine {
+    background-color: #ff4d4d;
+  }
+  
+  .inactiveLine {
+    background-color: #ddd;
+  }
+  
+  .details{
+    padding-top: 20px;
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .orderInfo{
+    padding: 2px;
+  }
+
+  .product_image{
+    border-radius: 50%;
+    height: 90px;
+    width: 90px;
+  }
+
+
+  .orderTrackingContainer {
+    padding: 20px;
+    background-color: white;
+}
+
+.customIconContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.iconCircle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    transition: background-color 0.3s ease;
+}
+
+.iconCircle.active {
+    background-color: #ff4d4d;
+    color: white;
+}
+
+.iconCircle.inactive {
+    background-color: lightgray;
+    color: white;
+}
+
+.orderInfo, .productDetails {
+    margin-top: 20px;
+}
+
+  
+
+
+   .orderTrackingContainer {
+    padding: 20px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.details {
+    display: flex;
+    justify-content: space-between; 
+    margin-top: 20px;
+}
+
+
+
+.orderInfo, .productDetails {
+    flex: 1; 
+    margin: 10px; 
+    padding: 20px;
+    border-radius: 5px; 
+    background-color: #f9f9f9; 
+}
+
+.orderInfo{
+  text-align: center;
+}
+
+.productDetails{
+  text-align: start;
+}
+
+.productDetails p {
+    margin: 10px 0; /* Vertical spacing between paragraphs */
+}
+
+.productDetails p strong {
+    white-space: pre-wrap; /* Ensures long text wraps properly */
+    display: block; /* Places each strong text in a new line */
+}
+
+.readMore {
+  color: #007bff; /* Change color to your preference */
+  cursor: pointer;
+  text-decoration: underline;
+  margin-left: 5px;
+}
