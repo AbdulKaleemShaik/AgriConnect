@@ -87,7 +87,7 @@ The project follows a **layered architecture**:
 |-------|------------|
 | Backend | Spring Boot (Java), Maven/Gradle |
 | Frontend | React (JavaScript), HTML, CSS, Bootstrap |
-| Database | MySQL / PostgreSQL / MongoDB |
+| Database | MongoDB |
 | Authentication | JWT |
 | API | RESTful services |
 
