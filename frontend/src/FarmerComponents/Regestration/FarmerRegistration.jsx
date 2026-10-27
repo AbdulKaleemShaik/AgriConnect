@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import FarmerNav from "../FarmerNav";
-import axios from 'axios';
+import { registerService } from '../../Service/UserService';
+import { getErrorMessage, getFieldErrors } from '../../Service/AxiosInstant';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
@@ -81,6 +82,11 @@ const FarmerRegistration = () => {
       toast.error('Please correct the errors before submitting.');
       return;
     }
+    if (formData.password.length < 8 || formData.password.length > 72) {
+      setErrors((prev) => ({ ...prev, password: 'Password must be between 8 and 72 characters' }));
+      toast.error('Password must be between 8 and 72 characters.');
+      return;
+    }
 
     const registrationData = new FormData();
     registrationData.append('name', formData.name);
@@ -91,21 +97,21 @@ const FarmerRegistration = () => {
     registrationData.append('state', formData.state);
     registrationData.append('pincode', formData.pincode);
     registrationData.append('password', formData.password);
-    registrationData.append('img', formData.profileImage);
+    if (formData.profileImage) {
+      registrationData.append('image', formData.profileImage);
+    }
 
     try {
-      const response = await axios.post('http://localhost:8080/admin/save-admin', registrationData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      await registerService(registrationData, 'farmer');
 
       toast.success('Registration Successful!');
       setTimeout(() => {
         navigate('/farmerlogin');
       }, 0);
     } catch (error) {
-      toast.error('Registration failed. Please try again.');
+      const fieldErrors = getFieldErrors(error);
+      setErrors((prev) => ({ ...prev, ...fieldErrors, form: getErrorMessage(error) }));
+      toast.error(getErrorMessage(error, 'Registration failed. Please try again.'));
     }
   };
 
@@ -223,6 +229,8 @@ const FarmerRegistration = () => {
               type="password"
               value={formData.password}
               onChange={handleChange}
+              error={!!errors.password}
+              helperText={errors.password}
               margin="normal"
               required
               className="text-field"
@@ -230,8 +238,8 @@ const FarmerRegistration = () => {
             <input
               type="file"
               name="profileImage"
+              accept="image/*"
               onChange={handleChange}
-              required
               style={{ marginTop: '15px' }}
               className="file-input"
             />

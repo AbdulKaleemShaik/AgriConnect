@@ -5,6 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Grid, TextField, Button, MenuItem, FormHelperText } from '@mui/material';
 import CustomerNav from './CustomerNav';
 import { registerService } from '../../Service/UserService';
+import { getErrorMessage, getFieldErrors } from '../../Service/AxiosInstant';
 import Navbar from '../../HomePage/NavBar';
 
 const statesList = [
@@ -82,6 +83,16 @@ const CustomerRegister = () => {
       toast.error('Please correct the errors before submitting.');
       return;
     }
+    if (formData.password.length < 8 || formData.password.length > 72) {
+      setErrors((prev) => ({ ...prev, password: 'Password must be between 8 and 72 characters' }));
+      toast.error('Password must be between 8 and 72 characters.');
+      return;
+    }
+    if (formData.password !== formData.confirmPassword) {
+      setErrors((prev) => ({ ...prev, confirmPassword: 'Passwords do not match' }));
+      toast.error('Passwords do not match.');
+      return;
+    }
 
     const formDataToSend = new FormData();
     formDataToSend.append('name', formData.name);
@@ -92,21 +103,20 @@ const CustomerRegister = () => {
     formDataToSend.append('state', formData.state);
     formDataToSend.append('pincode', formData.pincode);
     formDataToSend.append('password', formData.password);
-    formDataToSend.append('img', profileImage);
+    if (profileImage) {
+      formDataToSend.append('image', profileImage);
+    }
 
     try {
-      const response = await registerService(formDataToSend);
-
-      if (response.includes('Register successfully')) {
-        toast.success('Registration Successful!');
-        setTimeout(() => {
-          navigate('/customerlogin');
-        }, 0);
-      } else {
-        setErrors({ form: response });
-      }
+      await registerService(formDataToSend, 'customer');
+      toast.success('Registration Successful!');
+      setTimeout(() => {
+        navigate('/customerlogin');
+      }, 0);
     } catch (err) {
-      toast.error('An error occurred during registration. Please try again.');
+      const fieldErrors = getFieldErrors(err);
+      setErrors((prev) => ({ ...prev, ...fieldErrors, form: getErrorMessage(err) }));
+      toast.error(getErrorMessage(err, 'An error occurred during registration. Please try again.'));
     }
   };
 
@@ -207,6 +217,8 @@ const CustomerRegister = () => {
               type="password"
               value={formData.password}
               onChange={handleChange}
+              error={!!errors.password}
+              helperText={errors.password}
               margin="normal"
               required
             />
@@ -226,8 +238,8 @@ const CustomerRegister = () => {
             <input
               type="file"
               name="profileImage"
+              accept="image/*"
               onChange={handleFileChange}
-              required
               style={{ marginTop: '15px' }}
             />
             <FormHelperText error>{errors.form}</FormHelperText>

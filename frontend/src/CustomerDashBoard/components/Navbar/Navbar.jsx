@@ -5,20 +5,19 @@ import { Link, useNavigate } from "react-router-dom";
 import { StoreContext } from "../../../Context/StoreContext";
 import { IconButton, Avatar } from "@mui/material";
 import { useUser } from "../../../Context/UserContext";
+import { assetUrl } from "../../../Service/AxiosInstant";
 
 const Navbar = ({ setShowLogin }) => {
   const [menu, setMenu] = useState("menu");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Dropdown state
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // Mobile menu state
-  const { getTotalCartAmount, token, setToken } = useContext(StoreContext);
+  const { getTotalCartAmount, setToken } = useContext(StoreContext);
   const navigate = useNavigate();
-  const { userDetails, setUserDetails } = useUser();
+  const { userDetails, logout: clearUser } = useUser();
 
   const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userDetails");
+    clearUser();
     setToken("");
-    setUserDetails(null);
     navigate("/customerlogin");
   };
 
@@ -100,11 +99,11 @@ const Navbar = ({ setShowLogin }) => {
         </div>
 
         <div className={styles.navbarProfile}>
-          {userDetails && userDetails.profileImage ? (
+          {userDetails ? (
             <>
               <Avatar
                 className={styles.profileImage}
-                src={`${import.meta.env.VITE_API_URL}/img/profile_img/${userDetails.profileImage}`}
+                src={assetUrl(userDetails.profileImageUrl)}
                 alt="Profile"
                 onClick={toggleDropdown} // Click to toggle dropdown
               />

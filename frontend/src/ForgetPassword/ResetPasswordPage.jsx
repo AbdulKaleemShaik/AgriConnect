@@ -1,41 +1,44 @@
-// import React, { useState } from 'react';
-// import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa'; // Icons for the input fields
-// import styles from './ResetPasswordPage.module.css';
 import React, { useState } from 'react';
-import axios from 'axios';
 import styles from './ResetPasswordPage.module.css';
 import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { resetPasswordService } from '../Service/UserService';
+import { getErrorMessage } from '../Service/AxiosInstant';
 
 
 const ResetPassword = () => {
-  // const [email, setEmail] = useState('');
+  const params = useParams();
+  const [email, setEmail] = useState(params.email || '');
   const [otp, setOtp] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
-
-  const { email } = useParams();
-  // console.log(e);
-  
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!/^\d{6}$/.test(otp.trim())) {
+      toast.error('Please enter the 6-digit code from the email');
+      return;
+    }
+    if (newPassword.length < 8 || newPassword.length > 72) {
+      toast.error('Password must be between 8 and 72 characters');
+      return;
+    }
     if (newPassword !== confirmPassword) {
-      alert('Passwords do not match');
+      toast.error('Passwords do not match');
       return;
     }
     try {
-      const response = await axios.post('http://localhost:8080/user/api/reset-password', {
-        email,
-        otp,
-        newPassword
-      });
-      // alert(response.data);
-      navigate('/customerlogin');
-
+      setSubmitting(true);
+      await resetPasswordService({ email: email.trim(), otp: otp.trim(), newPassword });
+      toast.success('Password reset successfully. Please log in with your new password.');
+      navigate('/HomeLogin');
     } catch (error) {
       console.error('Error resetting password', error);
+      toast.error(getErrorMessage(error, 'Could not reset the password. Please try again.'));
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -43,19 +46,21 @@ const ResetPassword = () => {
     <div className={styles.container}>
       <h2 className={styles.title}>Reset Password</h2>
       <form onSubmit={handleSubmit} className={styles.form}>
-        {/* <input
+        <input
           type="email"
           placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className={styles.input}
           required
-        /> */}
+        />
         <input
           type="text"
-          placeholder="Enter OTP"
+          inputMode="numeric"
+          maxLength={6}
+          placeholder="Enter 6-digit OTP"
           value={otp}
-          onChange={(e) => setOtp(e.target.value)}
+          onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
           className={styles.input}
           required
         />
@@ -75,135 +80,12 @@ const ResetPassword = () => {
           className={styles.input}
           required
         />
-        <button type="submit" className={styles.button}>Reset Password</button>
+        <button type="submit" className={styles.button} disabled={submitting}>
+          {submitting ? 'Resetting...' : 'Reset Password'}
+        </button>
       </form>
     </div>
   );
 };
 
 export default ResetPassword;
-
-
-// import React, { useState } from 'react';
-// import axios from 'axios';
-
-// const ResetPassword = () => {
-//     const [email, setEmail] = useState('');
-//     const [otp, setOtp] = useState('');
-//     const [newPassword, setNewPassword] = useState('');
-//     const [confirmPassword, setConfirmPassword] = useState('');
-
-//     const handleSubmit = async (e) => {
-//         e.preventDefault();
-//         if (newPassword !== confirmPassword) {
-//             alert('Passwords do not match');
-//             return;
-//         }
-//         try {
-//             const response = await axios.post('http://localhost:8080/user/api/reset-password', {
-//                 email,
-//                 otp,
-//                 newPassword
-//             });
-//             alert(response.data);
-//         } catch (error) {
-//             console.error('Error resetting password', error);
-//         }
-//     };
-
-//     return (
-//         <div>
-//             <h2>Reset Password</h2>
-//             <form onSubmit={handleSubmit}>
-//                 <input
-//                     type="email"
-//                     placeholder="Enter your email"
-//                     value={email}
-//                     onChange={(e) => setEmail(e.target.value)}
-//                     required
-//                 />
-//                 <input
-//                     type="text"
-//                     placeholder="Enter OTP"
-//                     value={otp}
-//                     onChange={(e) => setOtp(e.target.value)}
-//                     required
-//                 />
-//                 <input
-//                     type="password"
-//                     placeholder="New Password"
-//                     value={newPassword}
-//                     onChange={(e) => setNewPassword(e.target.value)}
-//                     required
-//                 />
-//                 <input
-//                     type="password"
-//                     placeholder="Confirm New Password"
-//                     value={confirmPassword}
-//                     onChange={(e) => setConfirmPassword(e.target.value)}
-//                     required
-//                 />
-//                 <button type="submit">Reset Password</button>
-//             </form>
-//         </div>
-//     );
-// };
-
-// export default ResetPassword;
-
-
-// const ResetPassword = () => {
-//   const [showPassword, setShowPassword] = useState(false);
-//   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-//   const togglePasswordVisibility = () => setShowPassword(!showPassword);
-//   const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(!showConfirmPassword);
-
-//   return (
-//     <div className={styles.container}>
-//       <div className={styles.header}>
-//         <h2>Forgot Password?</h2>
-//         <p>"Lost Password? Harvest your access faster than a bumper crop!"</p>
-//       </div>
-//       <div className={styles.form}>
-
-//         <div className={styles.inputWrapper}>
-//           <FaLock className={styles.icon} />
-//           <input
-//             type="text"
-//             placeholder="Enter OTP"
-//             className={styles.input}
-//           />
-//         </div>
-//         <div className={styles.inputWrapper}>
-//           <FaLock className={styles.icon} />
-//           <input
-//             type={showPassword ? "text" : "password"}
-//             placeholder="New Password"
-//             className={styles.input}
-//           />
-//           <div onClick={togglePasswordVisibility} className={styles.eyeIcon}>
-//             {showPassword ? <FaEyeSlash /> : <FaEye />}
-//           </div>
-//         </div>
-//         <div className={styles.inputWrapper}>
-//           <FaLock className={styles.icon} />
-//           <input
-//             type={showConfirmPassword ? "text" : "password"}
-//             placeholder="Confirm Password"
-//             className={styles.input}
-//           />
-//           <div onClick={toggleConfirmPasswordVisibility} className={styles.eyeIcon}>
-//             {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-//           </div>
-//         </div>
-//         <button className={styles.resetButton}>Reset Password</button>
-//       </div>
-//       <a href="/customerlogin" className={styles.backToLogin}>
-//         &larr; Back to Login
-//       </a>
-//     </div>
-//   );
-// };
-
-// export default ResetPassword;

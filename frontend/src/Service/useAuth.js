@@ -1,8 +1,10 @@
 import {jwtDecode} from 'jwt-decode';
+import { getToken, normalizeRole } from './AxiosInstant';
 
+/** Reads the stored JWT; role is normalised to "CUSTOMER" | "FARMER" | "ADMIN". */
 const useAuth = () => {
-  const token = localStorage.getItem('token');
-  
+  const token = getToken();
+
   if (!token) {
     return { isAuthenticated: false, role: null };
   }
@@ -15,8 +17,7 @@ const useAuth = () => {
       return { isAuthenticated: false, role: null };
     }
 
-
-    const role = decodedToken?.role; 
+    const role = normalizeRole(decodedToken?.role);
     return { isAuthenticated: true, role };
   } catch (error) {
     return { isAuthenticated: false, role: null };

@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { TextField, Button, Typography, Container, Box, Grid, Link, Paper } from '@mui/material';
 import { FaEnvelope } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { forgotPasswordService } from '../Service/UserService';
+import { getErrorMessage } from '../Service/AxiosInstant';
 import { styled } from '@mui/system';
 import Lottie from 'react-lottie';
 import animationData from '../assets/Lotties/forgetpassword.json';
@@ -26,16 +27,12 @@ const ForgetPassword = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await axios.post('http://localhost:8080/user/api/forgot-password', { email });
-      navigate(`/resetPassword/${email}`);
+      // The server answers the same way whether or not the email is registered
+      await forgotPasswordService(email.trim());
+      toast.success('If an account exists for this email, a 6-digit code has been sent.');
+      navigate(`/resetPassword/${encodeURIComponent(email.trim())}`);
     } catch (error) {
-      if(error.response.data == "Error: Email not found")
-      {
-        toast.error("No account found with this email address");
-      }
-      else{
-        toast.error("something went wrong ");
-      }
+      toast.error(getErrorMessage(error, 'Something went wrong. Please try again.'));
     } finally {
       setIsLoading(false);
     }

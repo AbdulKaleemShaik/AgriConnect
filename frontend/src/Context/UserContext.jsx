@@ -1,21 +1,6 @@
-// import React, { createContext, useState, useContext } from 'react';
-// const UserContext = createContext();
-
-// export const useUser = () => {
-//   return useContext(UserContext);
-// };
-
-
-// export const UserProvider = ({ children }) => {
-//   const [userDetails, setUserDetails] = useState(null);
-
-//   return (
-//     <UserContext.Provider value={{ userDetails, setUserDetails }}>
-//       {children}
-//     </UserContext.Provider>
-//   );
-// };
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { clearAuth } from '../Service/AxiosInstant';
+import readAuth from '../Service/useAuth'; // plain function, safe outside components
 
 const UserContext = createContext();
 
@@ -24,10 +9,19 @@ export const useUser = () => {
 };
 
 export const UserProvider = ({ children }) => {
-  // Initialize userDetails from localStorage or set it to null
+  // Initialize userDetails (the UserResponse from GET /api/users/me) from localStorage
   const [userDetails, setUserDetails] = useState(() => {
-    const storedUserDetails = localStorage.getItem('userDetails');
-    return storedUserDetails ? JSON.parse(storedUserDetails) : null;
+    // A cached profile is only meaningful while the stored JWT is still valid
+    if (!readAuth().isAuthenticated) {
+      clearAuth();
+      return null;
+    }
+    try {
+      const storedUserDetails = localStorage.getItem('userDetails');
+      return storedUserDetails ? JSON.parse(storedUserDetails) : null;
+    } catch {
+      return null;
+    }
   });
 
   // Whenever userDetails change, update localStorage
@@ -35,14 +29,14 @@ export const UserProvider = ({ children }) => {
     if (userDetails) {
       localStorage.setItem('userDetails', JSON.stringify(userDetails));
     } else {
-      localStorage.removeItem('userDetails'); // Optional: Clear if userDetails become null
+      localStorage.removeItem('userDetails');
     }
   }, [userDetails]);
 
-  // Function to log out user (clears both state and localStorage)
+  // Log out: clears the JWT, the cached profile and the in-memory state
   const logout = () => {
+    clearAuth();
     setUserDetails(null);
-    localStorage.removeItem('userDetails');
   };
 
   return (

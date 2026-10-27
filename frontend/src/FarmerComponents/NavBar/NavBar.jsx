@@ -4,12 +4,12 @@ import { AppBar, Toolbar, Avatar, Menu, MenuItem, Typography, IconButton } from 
 import MenuIcon from '@mui/icons-material/Menu'; // Import MenuIcon from Material-UI
 import styles from './Navbar.module.css';
 import { useUser } from '../../Context/UserContext';
-import { useMemo } from 'react';
+import { assetUrl } from '../../Service/AxiosInstant';
 function NavBar() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false); // State for mobile menu
   const navigate = useNavigate();
-  const { userDetails, setUserDetails } = useUser(); // Access user details from context
+  const { userDetails, logout } = useUser(); // Access user details from context
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -20,9 +20,7 @@ function NavBar() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userDetails');
-    setUserDetails(null);
+    logout();
     handleMenuClose();
     navigate('/farmerlogin');
   };
@@ -101,8 +99,8 @@ function NavBar() {
           <Avatar
             alt="Profile"
             src={
-              userDetails && userDetails.profileImage
-                ? `${import.meta.env.VITE_API_URL}/img/profile_img/${userDetails.profileImage}`
+              userDetails && userDetails.profileImageUrl
+                ? assetUrl(userDetails.profileImageUrl)
                 : '/static/images/avatar/1.jpg'
             }
             onClick={handleMenuOpen}

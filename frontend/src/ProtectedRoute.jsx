@@ -1,16 +1,17 @@
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import useAuth from './Service/useAuth'; 
+import useAuth from './Service/useAuth';
 
 const ProtectedRoute = ({ allowedRoles }) => {
   const { isAuthenticated, role } = useAuth();
 
   if (!isAuthenticated) {
-    return <Navigate to="/customerlogin" />;
+    const loginPath = allowedRoles && allowedRoles.includes('FARMER') ? '/farmerlogin' : '/customerlogin';
+    return <Navigate to={loginPath} />;
   }
 
   if (allowedRoles && !allowedRoles.includes(role)) {
-    return <Navigate to="/" />; 
+    return <Navigate to="/" />;
   }
 
   return <Outlet />;

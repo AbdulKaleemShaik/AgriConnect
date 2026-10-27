@@ -4,8 +4,8 @@ import FarmerNav from '../FarmerNav';
 import farmerImg1 from '../../assets/farmer-image2.png';
 import { useNavigate, Link } from 'react-router-dom';
 import NavBar from '../../HomePage/NavBar';
-import { loginService } from '../../Service/UserService';
-import axiosInstance from '../../Service/AxiosInstant';
+import { loginService, fetchCurrentUser } from '../../Service/UserService';
+import { clearAuth, getErrorMessage, normalizeRole } from '../../Service/AxiosInstant';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useUser } from '../../Context/UserContext';
@@ -17,45 +17,31 @@ const FarmerLogin = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
 
-
-  const fetchUserProfile = async () => {
-    try {
-      const response = await axiosInstance.get('/admin/profiledetailsofuser');
-      const userData = response.data;
-      setUserDetails(userData);
-      console.log(userData);
-
-      localStorage.setItem('userDetails', JSON.stringify(userData));
-    } catch (error) {
-      console.error('Error fetching user profile:', error);
-      toast.error('Error fetching user profile');
-    }
-  };
-
   const handleLogin = async (e) => {
     e.preventDefault();
-    localStorage.removeItem('token');
+    clearAuth();
 
     const loginInfo = {
-      username: phoneNumber,
+      email: phoneNumber.trim(),
       password: password,
     };
 
     try {
       const data = await loginService(loginInfo);
-      const { token } = data;
-
-      if (token) {
-
-        localStorage.setItem('token', token);
-        await fetchUserProfile();
-        navigate('/farmerdashboard');
-      } else {
+      if (!data.token) {
         throw new Error('Token not received');
       }
+      if (normalizeRole(data.role) !== 'FARMER') {
+        clearAuth();
+        toast.error('This account is not a farmer account. Please use the customer login.');
+        return;
+      }
+      const userData = await fetchCurrentUser();
+      setUserDetails(userData);
+      navigate('/farmerdashboard');
     } catch (error) {
-      console.error('Login failed:', error.message);
-      toast.error('Invalid username or password', {
+      clearAuth();
+      toast.error(getErrorMessage(error, 'Invalid email or password'), {
         position: 'top-right',
         autoClose: 5000,
         hideProgressBar: false,
@@ -85,8 +71,8 @@ const FarmerLogin = () => {
             <div className={styles.inputs}>
               <input
                 className={styles.input}
-                type="text"
-                placeholder="Phone Number"
+                type="email"
+                placeholder="Email"
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 required
