@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import './userOrder.css';
-import axiosInstance from '../../Service/AxiosInstant';
+import { assetUrl, getErrorMessage } from '../../Service/AxiosInstant';
+import { getMyOrdersService, cancelOrderService } from '../../Service/UserService';
+import { toast } from 'react-toastify';
+
+// Customers may cancel until the order has shipped
+const CANCELLABLE = ['PLACED', 'CONFIRMED', 'PROCESSING'];
 import 'bootstrap/dist/css/bootstrap.min.css'; 
 import { Modal, Button } from 'react-bootstrap'; 
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import CustomerNav from '../../CustomerComponents/Authentication/CustomerNav';
 import Navbar from '../components/Navbar/Navbar'
 
@@ -20,11 +25,11 @@ const UserOrders = () => {
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const response = await axiosInstance.get('/user/user-orders');
-                setOrders(response.data);
+                const data = await getMyOrdersService();
+                setOrders(Array.isArray(data) ? data : []);
                 setLoading(false);
             } catch (err) {
-                setError('Failed to fetch orders. Please try again later.');
+                setError(getErrorMessage(err, 'Failed to fetch orders. Please try again later.'));
                 setLoading(false);
             }
         };
@@ -46,11 +51,13 @@ const UserOrders = () => {
     const confirmCancelOrder = async () => {
         try {
             setCanceling(true);
-            await axiosInstance.delete(`/user/cancel-order/${selectedOrder.id}`);
-            setOrders((prevOrders) => prevOrders.filter((o) => o.orderId !== selectedOrder.orderId));
+            const updated = await cancelOrderService(selectedOrder.id);
+            setOrders((prevOrders) => prevOrders.map((o) => (o.id === updated.id ? updated : o)));
             setShowCancelModal(false);
+            toast.success(`Order #${updated.orderNumber} cancelled`);
         } catch (err) {
-            setError('Failed to cancel the order. Please try again.');
+            toast.error(getErrorMessage(err, 'Failed to cancel the order. Please try again.'));
+            setShowCancelModal(false);
         } finally {
             setCanceling(false);
         }
@@ -102,34 +109,35 @@ const UserOrders = () => {
                         <tbody>
                             {orders.map((order) => (
                                 <tr key={order.id}>
-                                    <td>{order.orderId}</td>
+                                    <td>{order.orderNumber}</td>
                                     <td>
                                         <img
-                                            src={`${import.meta.env.VITE_API_URL}/img/product_img/${order.product.image}`}
-                                            alt={order.product.title}
+                                            src={assetUrl(order.product?.imageUrl)}
+                                            alt={order.product?.title}
                                             className="img-fluid product-image"
                                         />
                                     </td>
-                                    <td>{order.product.title}</td>
+                                    <td>{order.product?.title}</td>
                                     <td>{order.quantity}</td>
-                                    <td>₹{order.price * order.quantity}</td>
+                                    <td>₹{order.totalPrice}</td>
                                     <td>{new Date(order.orderDate).toLocaleDateString()}</td>
-                                    <td>{order.orderAddress.address}, {order.orderAddress.city}</td>
+                                    <td>{order.shippingAddress?.address}, {order.shippingAddress?.city}</td>
                                     <td>
                                         <button
                                             onClick={() => handleShowModal(order)}
                                             className="view_status_button"
                                         >
-                                            Status
+                                            {order.statusLabel || 'Status'}
                                         </button>
                                     </td>
                                     <td>
                                         <button
                                             onClick={() => handleCancelOrder(order)}
-                                            
+                                            disabled={!CANCELLABLE.includes(order.status)}
+                                            title={CANCELLABLE.includes(order.status) ? '' : 'Orders can only be cancelled before they are shipped'}
                                             className="cancle_button"
                                         >
-                                            Cancel
+                                            {order.status === 'CANCELLED' ? 'Cancelled' : 'Cancel'}
                                         </button>
                                     </td>
                                 </tr>
@@ -145,7 +153,7 @@ const UserOrders = () => {
                     <Modal.Title>Cancel Order</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    Are you sure you want to cancel order #{selectedOrder?.orderId}?
+                    Are you sure you want to cancel order #{selectedOrder?.orderNumber}?
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleCloseCancelModal}>

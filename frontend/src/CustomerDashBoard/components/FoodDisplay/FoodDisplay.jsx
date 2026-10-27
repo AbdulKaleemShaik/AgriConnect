@@ -2,9 +2,17 @@
 import React, { useContext, useState, useEffect } from "react";
 import "./FoodDisplay.css";
 import { StoreContext } from "../../../Context/StoreContext";
-import axiosInstance from "../../../Service/AxiosInstant";
+import { assetUrl } from "../../../Service/AxiosInstant";
+import { fetchProductPage } from "../../../Service/UserService";
 import FoodItem from "../FoodItem/FoodItem";
 import { useSpring, animated } from "react-spring";
+
+// Explore-menu names -> backend category names ("All" means no filter)
+const toApiCategory = (category) => {
+  if (!category || category === "All") return undefined;
+  const name = category.trim();
+  return name === "TuberCrops" ? "Tuber Crops" : name;
+};
 
 const FoodDisplay = ({ category }) => {
   const { setFoodListData } = useContext(StoreContext);
@@ -17,16 +25,13 @@ const FoodDisplay = ({ category }) => {
 
   const fetchProducts = async (page) => {
     try {
-      const response = await axiosInstance.get(`/products`, {
-        params: {
-          page,
-          size: itemsPerPage,
-        },
+      const { content = [], totalPages = 0 } = await fetchProductPage({
+        page,
+        size: itemsPerPage,
+        category: toApiCategory(category),
       });
-
-      const { content, totalPages } = response.data;
       setCurrentItems(content);
-      setTotalPages(totalPages);
+      setTotalPages(Math.max(totalPages, 1));
       setFoodListData(content);
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -35,7 +40,13 @@ const FoodDisplay = ({ category }) => {
 
   useEffect(() => {
     fetchProducts(currentPage);
-  }, [currentPage]);
+  }, [currentPage, category]);
+
+  // Changing the category starts again from the first page
+  useEffect(() => {
+    setCurrentPage(0);
+    setIdx(0);
+  }, [category]);
 
   const goToNextPage = () => {
     setCurrentPage((prev) => (prev + 1) % totalPages);
@@ -77,8 +88,8 @@ const FoodDisplay = ({ category }) => {
             id={item.id}
             name={item.title}
             description={item.description}
-            price={item.price}
-            image={`${import.meta.env.VITE_API_URL}/img/product_img/${item.image}`}
+            price={item.discountPrice ?? item.price}
+            image={assetUrl(item.imageUrl)}
           />
         ))}
       </animated.div>

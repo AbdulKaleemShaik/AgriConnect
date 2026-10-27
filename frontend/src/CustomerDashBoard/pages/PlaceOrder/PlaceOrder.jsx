@@ -37,7 +37,8 @@ function PlaceOrder() {
     if (!formData.address) newErrors.street = "Street address is required";
     if (!formData.city) newErrors.city = "City is required";
     if (!formData.state) newErrors.state = "State is required";
-    if (!formData.pincode || !/^\d{5,6}$/.test(formData.pincode)) newErrors.zipCode = "Valid Zip Code is required";
+    if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Valid Email is required";
+    if (!formData.pincode || !/^\d{6}$/.test(formData.pincode)) newErrors.zipCode = "Valid 6-digit Zip Code is required";
     if (!formData.country) newErrors.country = "Country is required";
     if (!formData.mobileNo || !/^\d{10}$/.test(formData.mobileNo)) newErrors.phone = "Valid 10-digit phone number is required";
 
@@ -95,6 +96,7 @@ function PlaceOrder() {
               onChange={handleInputChange}
             />
           </div>
+          {errors.email && <span className="error">{errors.email}</span>}
 
 
           <input
@@ -122,35 +124,35 @@ function PlaceOrder() {
               onChange={handleInputChange}
             >
               <option value="">Select State</option>
-              <option value="AP">Andhra Pradesh</option>
-              <option value="AR">Arunachal Pradesh</option>
-              <option value="AS">Assam</option>
-              <option value="BR">Bihar</option>
-              <option value="CT">Chhattisgarh</option>
-              <option value="GA">Goa</option>
-              <option value="GJ">Gujarat</option>
-              <option value="HR">Haryana</option>
-              <option value="HP">Himachal Pradesh</option>
-              <option value="JK">Jammu and Kashmir</option>
-              <option value="JH">Jharkhand</option>
-              <option value="KA">Karnataka</option>
-              <option value="KL">Kerala</option>
-              <option value="MP">Madhya Pradesh</option>
-              <option value="MH">Maharashtra</option>
-              <option value="MN">Manipur</option>
-              <option value="ML">Meghalaya</option>
-              <option value="MZ">Mizoram</option>
-              <option value="NL">Nagaland</option>
-              <option value="OD">Odisha</option>
-              <option value="PB">Punjab</option>
-              <option value="RJ">Rajasthan</option>
-              <option value="SK">Sikkim</option>
-              <option value="TN">Tamil Nadu</option>
-              <option value="TG">Telangana</option>
-              <option value="TR">Tripura</option>
-              <option value="UP">Uttar Pradesh</option>
-              <option value="UT">Uttarakhand</option>
-              <option value="WB">West Bengal</option>
+              <option value="Andhra Pradesh">Andhra Pradesh</option>
+              <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+              <option value="Assam">Assam</option>
+              <option value="Bihar">Bihar</option>
+              <option value="Chhattisgarh">Chhattisgarh</option>
+              <option value="Goa">Goa</option>
+              <option value="Gujarat">Gujarat</option>
+              <option value="Haryana">Haryana</option>
+              <option value="Himachal Pradesh">Himachal Pradesh</option>
+              <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+              <option value="Jharkhand">Jharkhand</option>
+              <option value="Karnataka">Karnataka</option>
+              <option value="Kerala">Kerala</option>
+              <option value="Madhya Pradesh">Madhya Pradesh</option>
+              <option value="Maharashtra">Maharashtra</option>
+              <option value="Manipur">Manipur</option>
+              <option value="Meghalaya">Meghalaya</option>
+              <option value="Mizoram">Mizoram</option>
+              <option value="Nagaland">Nagaland</option>
+              <option value="Odisha">Odisha</option>
+              <option value="Punjab">Punjab</option>
+              <option value="Rajasthan">Rajasthan</option>
+              <option value="Sikkim">Sikkim</option>
+              <option value="Tamil Nadu">Tamil Nadu</option>
+              <option value="Telangana">Telangana</option>
+              <option value="Tripura">Tripura</option>
+              <option value="Uttar Pradesh">Uttar Pradesh</option>
+              <option value="Uttarakhand">Uttarakhand</option>
+              <option value="West Bengal">West Bengal</option>
               {/* Add other states here */}
             </select>
             {errors.state && <span className="error">{errors.state}</span>}
@@ -211,7 +213,7 @@ function PlaceOrder() {
                 <b>₹{getTotalCartAmount() === 0 ? 0 : getTotalCartAmount() + 2}</b>
               </div>
             </div>
-            <button type="submit">PROCEED TO PAYMENT</button>
+            <button type="submit" disabled={getTotalCartAmount() === 0}>PROCEED TO PAYMENT</button>
           </div>
         </div>
       </form>

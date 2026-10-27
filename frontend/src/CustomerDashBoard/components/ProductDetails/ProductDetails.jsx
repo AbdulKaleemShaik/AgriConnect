@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axiosInstance from "../../../Service/AxiosInstant";
+import { assetUrl, getErrorMessage, normalizeRole } from "../../../Service/AxiosInstant";
+import { fetchProductsById } from "../../../Service/UserService";
 import styles from "./ProductDetails.module.css";
 import { StoreContext } from "../../../Context/StoreContext"; // Import StoreContext
 import CustomerNav from "../../../CustomerComponents/Authentication/CustomerNav";
@@ -11,27 +12,31 @@ import 'react-toastify/dist/ReactToastify.css'; // Import CSS for Toastify
 const ProductDetails = () => {
     const { id } = useParams(); // Get product id from URL
     const [product, setProduct] = useState(null);
-    const [quantity, setQuantity] = useState(1); // For handling quantity
+    const [error, setError] = useState(null);
     const { addToCart } = useContext(StoreContext); // Use addToCart from StoreContext
     const navigate = useNavigate();
     const { userDetails } = useUser();
 
     // Fetch product details by id
     useEffect(() => {
-        axiosInstance
-            .get(`/product/${id}`)
-            .then((res) => {
-                setProduct(res.data);
+        fetchProductsById(id)
+            .then((data) => {
+                setProduct(data);
             })
             .catch((err) => {
                 console.error("Error fetching product details:", err);
+                setError(getErrorMessage(err, "Product not found."));
             });
     }, [id]);
 
     // Handle adding product to cart using StoreContext
     const handleAddToCart = () => {
         if (userDetails && product) {
-            addToCart(product.id, userDetails.id);
+            if (normalizeRole(userDetails.role) !== "CUSTOMER") {
+                toast.warning("Only customer accounts can add items to a cart.", { autoClose: 3000 });
+                return;
+            }
+            addToCart(product.id).then((ok) => ok && toast.success("Added to cart", { autoClose: 1500 }));
         } else {
             // Show warning message if user is not logged in
             toast.warning("Please login to add product to cart!", {
@@ -42,6 +47,9 @@ const ProductDetails = () => {
     };
 
     // If product is not loaded yet
+    if (error) {
+        return <p>{error}</p>;
+    }
     if (!product) {
         return <p>Loading product details...</p>;
     }
@@ -53,25 +61,14 @@ const ProductDetails = () => {
             <div className={styles.product_details_container}>
                 <div className={styles.product_info}>
                     <img
-                        src={`${import.meta.env.VITE_API_URL}/img/product_img/${product.image}`}
-                        alt={product.name}
+                        src={assetUrl(product.imageUrl)}
+                        alt={product.title}
                         className={styles.product_image}
                     />
                     <div className={styles.product_description}>
-                        <h1>{product.name}</h1>
+                        <h1>{product.title}</h1>
                         <p>{product.description}</p>
-                        <p className={styles.price}>Price: ${product.price}</p>
-                        {/* Uncomment if you want to add a quantity selector */}
-                        {/* <div className={styles.quantity_selector}>
-                            <label htmlFor="quantity">Quantity: </label>
-                            <input
-                                type="number"
-                                id="quantity"
-                                value={quantity}
-                                min="1"
-                                onChange={(e) => setQuantity(Number(e.target.value))}
-                            />
-                        </div> */}
+                        <p className={styles.price}>Price: ₹{product.discountPrice ?? product.price}</p>
                         <button className={styles.add_to_cart_btn} onClick={handleAddToCart}>
                             Add to Cart
                         </button>

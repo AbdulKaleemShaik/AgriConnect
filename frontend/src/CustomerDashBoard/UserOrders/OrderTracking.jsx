@@ -1,23 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Navigate } from 'react-router-dom';
 import { Stepper, Step, StepLabel } from '@mui/material';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import PaymentIcon from '@mui/icons-material/Payment';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import styles from './OrderTracking.module.css';
-import axiosInstance from '../../Service/AxiosInstant';
+import { getOrderByIdService } from '../../Service/UserService';
 import CustomerNav from '../../CustomerComponents/Authentication/CustomerNav';
 import { Collapse } from '@mui/material';
 
+// Fulfilment stages, in the order of the backend OrderStatus enum
 const orderStages = [
-    'Order placed',
-    'Order confirmed',
-    'Order processing',
-    'Shipped/Dispatched',
-    'In transit',
-    'Out for delivery',
-    'Delivered',
+    { status: 'PLACED', label: 'Order placed' },
+    { status: 'CONFIRMED', label: 'Order confirmed' },
+    { status: 'PROCESSING', label: 'Order processing' },
+    { status: 'SHIPPED', label: 'Shipped/Dispatched' },
+    { status: 'IN_TRANSIT', label: 'In transit' },
+    { status: 'OUT_FOR_DELIVERY', label: 'Out for delivery' },
+    { status: 'DELIVERED', label: 'Delivered' },
 ];
 
 const icons = {
@@ -29,37 +30,45 @@ const icons = {
     6: <CheckCircleIcon />,
 };
 
+const formatDate = (value) => (value ? new Date(value).toLocaleDateString() : '-');
+
 const OrderTracking = () => {
-    const [currentStage, setCurrentStage] = useState(0);
     const location = useLocation();
-    const order = location.state;
+    const [order, setOrder] = useState(location.state);
     const [openDescription, setOpenDescription] = useState(false);
 
+    // Refresh the order (GET /api/orders/{id}) so the status is current
     useEffect(() => {
-        const fetchStatus = async () => {
-            try {
-                const response = await axiosInstance.get(`/user/api/getstatus/${order.id}`);
-                const status = response.data;
-                const stageIndex = orderStages.indexOf(status);
-                setCurrentStage(stageIndex >= 0 ? stageIndex : 0);
-            } catch (e) {
-                console.log(e);
-            }
-        };
-        fetchStatus();
-    }, [order]);
+        if (!location.state?.id) return;
+        getOrderByIdService(location.state.id)
+            .then(setOrder)
+            .catch((e) => console.log(e));
+    }, [location.state]);
+
+    if (!order) {
+        return <Navigate to="/customerdashboard/customerorders" />;
+    }
+
+    const stageIndex = orderStages.findIndex((s) => s.status === order.status);
+    const currentStage = stageIndex >= 0 ? stageIndex : 0;
+    const expected = order.orderDate ? new Date(new Date(order.orderDate).getTime() + 7 * 24 * 60 * 60 * 1000) : null;
+    const description = order.product?.description || '';
+    const address = order.shippingAddress || {};
 
     return (
         <>
         <CustomerNav />
             <div className={styles.orderTrackingContainer}>
                 <div className={styles.header}>
-                    <h2><strong>Tracking Order</strong> <br></br>{order.orderId}</h2>
+                    <h2><strong>Tracking Order</strong> <br></br>{order.orderNumber}</h2>
                 </div>
 
+                {order.status === 'CANCELLED' ? (
+                    <p style={{ textAlign: 'center' }}><strong>{order.statusLabel}</strong></p>
+                ) : (
                 <Stepper activeStep={currentStage} alternativeLabel>
-                    {orderStages.map((label, index) => (
-                        <Step key={index}>
+                    {orderStages.map((stage, index) => (
+                        <Step key={stage.status}>
                             <StepLabel
                                 StepIconComponent={() => (
                                     <div className={styles.customIconContainer}>
@@ -69,38 +78,38 @@ const OrderTracking = () => {
                                     </div>
                                 )}
                             >
-                                {label}
+                                {stage.label}
                             </StepLabel>
                         </Step>
                     ))}
                 </Stepper>
+                )}
             </div>
 
             <div className={styles.details}>
                 <div className={styles.orderInfo}>
                     <h1>Order Details</h1>
-                    <p>Ordered Date: <strong>{order.orderDate}</strong></p>
-                    <p>Expected delivery: <strong>{order.orderDate + 7}</strong></p>
+                    <p>Ordered Date: <strong>{formatDate(order.orderDate)}</strong></p>
+                    <p>Expected delivery: <strong>{expected ? expected.toLocaleDateString() : '-'}</strong></p>
                     <p>Payment Type: <strong>{order.paymentType}</strong></p>
-                    <p>Status: <strong>{order.status}</strong></p>
-                    <p>Address: <strong>{`${order.orderAddress.address}, ${order.orderAddress.city}, ${order.orderAddress.pincode}`}</strong></p>
+                    <p>Status: <strong>{order.statusLabel}</strong></p>
+                    <p>Address: <strong>{`${address.address || ''}, ${address.city || ''}, ${address.pincode || ''}`}</strong></p>
                 </div>
 
                 <div className={styles.productDetails}>
                     <h1>Product Details</h1>
-                    <p>Name: <strong>{order.product.title}</strong></p>
-                    <p>Category: <strong>{order.product.category}</strong></p>
-                    <p>Category: <strong>{order.product.category}</strong></p>
+                    <p>Name: <strong>{order.product?.title}</strong></p>
+                    <p>Category: <strong>{order.product?.category}</strong></p>
                     <p>
-                        Description: <strong>{order.product.description.length > 100 ? `${order.product.description.slice(0, 50)}...` : order.product.description}</strong>
-                        {order.product.description.length > 100 && (
+                        Description: <strong>{description.length > 100 ? `${description.slice(0, 50)}...` : description}</strong>
+                        {description.length > 100 && (
                             <span onClick={() => setOpenDescription(!openDescription)} className={styles.readMore}> Read More</span>
                         )}
                     </p>
                     <Collapse in={openDescription}>
-                        <p>{order.product.description}</p>
+                        <p>{description}</p>
                     </Collapse>
-                    <p>Price: <strong>{order.price}</strong></p>
+                    <p>Price: <strong>₹{order.totalPrice}</strong></p>
                 </div>
             </div>
         </>
@@ -108,131 +117,3 @@ const OrderTracking = () => {
 };
 
 export default OrderTracking;
-
-
-// import React, { useEffect, useState } from 'react';
-// import { useLocation } from 'react-router-dom';
-// import { Stepper, Step, StepLabel, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
-// import LocalShippingIcon from '@mui/icons-material/LocalShipping';
-// import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-// import PaymentIcon from '@mui/icons-material/Payment';
-// import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-// import styles from './OrderTracking.module.css';
-// import axiosInstance from '../../Service/AxiosInstant';
-// import CustomerNav from '../../CustomerComponents/Authentication/CustomerNav';
-// import { Collapse } from '@mui/material';
-
-// const orderStages = [
-//     'Order placed',
-//     'Order confirmed',
-//     'Order processing',
-//     'Shipped/Dispatched',
-//     'In transit',
-//     'Out for delivery',
-//     'Delivered',
-// ];
-
-// const icons = {
-//     1: <ShoppingCartIcon />,
-//     2: <PaymentIcon />,
-//     3: <LocalShippingIcon />,
-//     4: <LocalShippingIcon />,
-//     5: <LocalShippingIcon />,
-//     6: <CheckCircleIcon />,
-// };
-
-// const OrderTracking = () => {
-//     const [currentStage, setCurrentStage] = useState(0);
-//     const [open, setOpen] = useState(false);
-//     const [order, setOrder] = useState({});
-//     const [openDescription, setOpenDescription] = useState(false);
-//     const location = useLocation();
-
-//     useEffect(() => {
-//         const fetchStatus = async () => {
-//             try {
-//                 const response = await axiosInstance.get(`/user/api/getstatus/${location.state.id}`);
-//                 const status = response.data;
-//                 const stageIndex = orderStages.indexOf(status);
-//                 setCurrentStage(stageIndex >= 0 ? stageIndex : 0);
-//                 console.log(location.state);
-//                 setOrder(location.state); // Set order data
-//             } catch (e) {
-//                 console.log(e);
-//             }
-//         };
-//         fetchStatus();
-//     }, [location.state]);
-
-//     const handleOpen = () => setOpen(true);
-//     const handleClose = () => setOpen(false);
-
-//     return (
-//         <>
-//             <CustomerNav />
-//             <div className={styles.orderTrackingContainer}>
-//                 <div className={styles.header}>
-//                     <h2><strong>Tracking Order</strong><br />{order.orderId}</h2>
-//                 </div>
-
-//                 <Stepper activeStep={currentStage} alternativeLabel>
-//                     {orderStages.map((label, index) => (
-//                         <Step key={index}>
-//                             <StepLabel
-//                                 StepIconComponent={() => (
-//                                     <div className={styles.customIconContainer}>
-//                                         <div className={`${styles.iconCircle} ${index <= currentStage ? styles.active : styles.inactive}`}>
-//                                             {icons[index + 1]}
-//                                         </div>
-//                                     </div>
-//                                 )}
-//                             >
-//                                 {label}
-//                             </StepLabel>
-//                         </Step>
-//                     ))}
-//                 </Stepper>
-//             </div>
-
-//             <div className={styles.details}>
-//                 <div className={styles.orderInfo}>
-//                     <h1>Order Details</h1>
-//                     <p>Ordered Date: <strong>{order.orderDate}</strong></p>
-//                     <p>Expected delivery: <strong>{new Date(order.orderDate).setDate(new Date(order.orderDate).getDate() + 7)}</strong></p>
-//                     <p>Payment Type: <strong>{order.paymentType}</strong></p>
-//                     <p>Status: <strong>{order.status}</strong></p>
-//                     <p>Address: <strong>{`${order.orderAddress.address}, ${order.orderAddress.city}, ${order.orderAddress.pincode}`}</strong></p>
-//                 </div>
-
-//                 <div className={styles.productDetails}>
-//                     <h1>Product Details</h1>
-//                     <p>Name: <strong>{order.product.title}</strong></p>
-//                     <p>Category: <strong>{order.product.category}</strong></p>
-//                     <p>
-//                         Description: <strong>{order.product.description.length > 100 ? `${order.product.description.slice(0, 100)}...` : order.product.description}</strong>
-//                         {order.product.description.length > 100 && (
-//                             <span onClick={() => setOpenDescription(!openDescription)} className={styles.readMore}> Read More</span>
-//                         )}
-//                     </p>
-//                     <Collapse in={openDescription}>
-//                         <p>{order.product.description}</p>
-//                     </Collapse>
-//                     <p>Price: <strong>{order.price}</strong></p>
-//                 </div>
-//             </div>
-
-//             <Dialog open={open} onClose={handleClose}>
-//                 <DialogTitle>Product Description</DialogTitle>
-//                 <DialogContent>
-//                     <p>{order.product.description}</p>
-//                 </DialogContent>
-//                 <DialogActions>
-//                     <Button onClick={handleClose} color="primary">Close</Button>
-//                 </DialogActions>
-//             </Dialog>
-//         </>
-//     );
-// };
-
-// export default OrderTracking;
-

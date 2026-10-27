@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axiosInstance from '../../../Service/AxiosInstant';
+import { assetUrl, getErrorMessage } from '../../../Service/AxiosInstant';
+import { fetchCurrentUser, updateProfileService, changePasswordService } from '../../../Service/UserService';
 import { Avatar, Box, Button, Card, Container, Grid, TextField, Typography } from '@mui/material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -32,25 +33,24 @@ function CustomerProfilePage() {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const response = await axiosInstance.get('/user/profiledetailsofuser');
-        const userData = response.data;
+        const userData = await fetchCurrentUser();
 
         setUserDetails(userData);
 
         setFormData({
           id: userData.id,
-          name: userData.name,
-          mobileNumber: userData.mobileNumber,
-          email: userData.email,
-          address: userData.address,
-          city: userData.city,
-          state: userData.state,
-          pincode: userData.pincode,
-          profileImage: userData.profileImage, 
+          name: userData.name || '',
+          mobileNumber: userData.mobileNumber || '',
+          email: userData.email || '',
+          address: userData.address || '',
+          city: userData.city || '',
+          state: userData.state || '',
+          pincode: userData.pincode || '',
+          profileImage: null, // only a newly selected File is uploaded
         });
 
-        if (userData.profileImage) {
-          setPreviewImage(process.env.REACT_APP_BACKEND_URL + userData.profileImage); 
+        if (userData.profileImageUrl) {
+          setPreviewImage(assetUrl(userData.profileImageUrl));
         } else {
           setPreviewImage(profilePhoto); 
         }
@@ -96,31 +96,26 @@ function CustomerProfilePage() {
 
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
+    // PUT /api/users/me (multipart): email and role are not editable
     const profileFormData = new FormData();
-    profileFormData.append('id', formData.id);
+    ['name', 'mobileNumber', 'address', 'city', 'state', 'pincode'].forEach((key) => {
+      profileFormData.append(key, formData[key] ?? '');
+    });
 
-    for (const key in formData) {
-      if (key !== 'profileImage') {
-        profileFormData.append(key, formData[key]);
-      }
-    }
-
-    if (formData.profileImage) {
-      profileFormData.append('img', formData.profileImage);
+    if (formData.profileImage instanceof File) {
+      profileFormData.append('image', formData.profileImage);
     }
 
     try {
-      const response = await axiosInstance.post('/user/update-profile', profileFormData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      const updatedProfileImage = response.data.profileImage;
-      setUserDetails((prevDetails) => ({
-        ...prevDetails,
-        profileImage: updatedProfileImage,
-      }));
+      const updatedUser = await updateProfileService(profileFormData);
+      setUserDetails(updatedUser);
+      setFormData((prev) => ({ ...prev, profileImage: null }));
+      if (updatedUser.profileImageUrl) {
+        setPreviewImage(assetUrl(updatedUser.profileImageUrl));
+      }
       toast.success('Profile updated successfully!');
     } catch (error) {
-      toast.error(error.response ? error.response.data : 'Error updating profile');
+      toast.error(getErrorMessage(error, 'Error updating profile'));
     }
   };
   
@@ -132,17 +127,20 @@ function CustomerProfilePage() {
       return;
     }
 
-    try {
-      const params = new URLSearchParams();
-      params.append('newPassword', passwordChange.newPassword);
-      params.append('currentPassword', passwordChange.currentPassword);
+    if (passwordChange.newPassword.length < 8 || passwordChange.newPassword.length > 72) {
+      toast.error('New password must be between 8 and 72 characters');
+      return;
+    }
 
-      await axiosInstance.post('/admin/change-password', params, {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    try {
+      await changePasswordService({
+        currentPassword: passwordChange.currentPassword,
+        newPassword: passwordChange.newPassword,
       });
+      setPasswordChange({ currentPassword: '', newPassword: '', confirmPassword: '' });
       toast.success('Password changed successfully!');
     } catch (error) {
-      toast.error(error.response ? error.response.data : 'Error changing password');
+      toast.error(getErrorMessage(error, 'Error changing password'));
     }
   };
 
@@ -194,6 +192,7 @@ function CustomerProfilePage() {
                       name="email"
                       value={formData.email}
                       variant="outlined"
+                      InputProps={{ readOnly: true }}
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -244,7 +243,7 @@ function CustomerProfilePage() {
                       sx={{ backgroundColor: 'red', color: '#fff' }}
                     >
                       Upload Profile Image
-                      <input type="file" hidden onChange={handleFileChange} />
+                      <input type="file" hidden accept="image/*" onChange={handleFileChange} />
                     </Button>
                   </Grid>
                   <Grid item xs={12}>

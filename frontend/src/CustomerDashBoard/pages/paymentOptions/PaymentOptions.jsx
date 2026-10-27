@@ -1,10 +1,13 @@
 
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import './PaymentOptions.css'; // Import your CSS for styling
-import axiosInstance from '../../../Service/AxiosInstant';
+import { getErrorMessage } from '../../../Service/AxiosInstant';
+import { placeOrderService } from '../../../Service/UserService';
 import { useUser } from "../../../Context/UserContext";
+import { StoreContext } from '../../../Context/StoreContext';
 import Loading from './Loading'; // Import your Loading component
 import { Player } from '@lottiefiles/react-lottie-player';
 import successAnimation from '../../../assets/Lotties/payment_success.json';
@@ -22,10 +25,11 @@ function PaymentOptions() {
   });
   const [loading, setLoading] = useState(false); // Loading state
   const { userDetails } = useUser();
+  const { setCartItems, loadCartData } = useContext(StoreContext);
 
   const navigate = useNavigate();
   const location = useLocation();
-  let { formData } = location.state || {};
+  const { formData } = location.state || {};
 
   const handlePaymentSelection = (option) => {
     setSelectedOption(option);
@@ -43,50 +47,70 @@ function PaymentOptions() {
     }
   };
 
+  // POST /api/orders: checks out the whole server-side cart (one order per cart line)
+  const placeOrder = async (paymentType) => {
+    if (!formData) {
+      toast.error('Delivery information is missing. Please fill in the delivery form first.');
+      navigate('/customerdashboard/order');
+      return false;
+    }
+    const checkout = {
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email || userDetails?.email,
+      mobileNo: formData.mobileNo,
+      address: formData.address,
+      city: formData.city,
+      state: formData.state,
+      pincode: formData.pincode,
+      paymentType,
+    };
+    try {
+      setLoading(true);
+      await placeOrderService(checkout);
+      setCartItems([]); // the server empties the cart on checkout
+      await loadCartData();
+      return true;
+    } catch (error) {
+      console.error(error);
+      toast.error(getErrorMessage(error, 'Could not place your order. Please try again.'));
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handlePhonePeSubmit = async () => {
     if (phoneNumber) {
-      formData = { ...formData, paymentType: selectedOption, email: userDetails.email };
-      try {
-        setLoading(true); // Set loading to true when submitting
-        const response = await axiosInstance.post('/user/save-order', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-        // console.log(response);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoading(false); // Set loading to false when done
-        setShowPhonePeModal(false);
-        setShowSuccessModal(true);
-      }
+      const ok = await placeOrder(selectedOption);
+      setShowPhonePeModal(false);
+      if (ok) setShowSuccessModal(true);
     } else {
       alert('Please enter a phone number!');
     }
   };
 
-  const handleCardSubmit = () => {
+  const handleCardSubmit = async () => {
     const { cardNumber, validThru, cvv } = cardDetails;
     if (cardNumber && validThru && cvv) {
-      setLoading(true); // Set loading to true when submitting card details
-      console.log(`Card payment with details: ${cardNumber}, ${validThru}, ${cvv}`);
+      const ok = await placeOrder('Card');
       setShowCardModal(false);
-      setShowSuccessModal(true);
-      setLoading(false); // Set loading to false after processing
+      if (ok) setShowSuccessModal(true);
     } else {
       alert('Please fill all the card details!');
     }
   };
 
-  const handlePaymentProceed = () => {
-    if (selectedOption && selectedOption !== 'PhonePe' && selectedOption !== 'Card') {
-      setLoading(true); // Set loading to true when proceeding with a non-modal option
-      console.log(`Proceeding with ${selectedOption}`);
-      setShowSuccessModal(true);
-      setLoading(false); // Set loading to false when done
-    } else if (!selectedOption) {
+  const handlePaymentProceed = async () => {
+    if (!selectedOption) {
       alert('Please select a payment option!');
+    } else if (selectedOption === 'Card') {
+      setShowCardModal(true);
+    } else if (['PhonePe', 'Google Pay', 'Paytm'].includes(selectedOption)) {
+      setShowPhonePeModal(true);
+    } else {
+      const ok = await placeOrder(selectedOption);
+      if (ok) setShowSuccessModal(true);
     }
   };
 
