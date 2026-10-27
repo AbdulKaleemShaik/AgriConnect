@@ -3,35 +3,59 @@ import { useParams, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import styles from "./EditProduct.module.css";
-import axiosInstance from "../../Service/AxiosInstant";
+import { getErrorMessage } from "../../Service/AxiosInstant";
+import { getProductById, updateProduct } from "../../Service/FarmerService";
+import { fetchCategories } from "../../Service/UserService";
+
+const FALLBACK_CATEGORIES = ["Vegetables", "Fruits", "Legumes", "Oilseeds", "Grains", "Tuber Crops", "Spices", "Ornamental"];
 
 const EditProduct = () => {
   const { id } = useParams();
   const [product, setProduct] = useState({
-    id:"",
+    id: "",
     title: "",
     description: "",
     category: "",
     price: 0,
     stock: 0,
     discount: 0,
-    discountPrice: 0,
-    isActive: false,
+    active: false,
   });
+  const [categories, setCategories] = useState(FALLBACK_CATEGORIES);
 
   const [file, setFile] = useState(null);
   const navigate = useNavigate();
 
-  
   useEffect(() => {
-    axiosInstance.get(`/product/${id}`).then((response) => {
-      setProduct({
-        ...response.data,  
-        id: response.data.id 
-      });
-    });
+    getProductById(id)
+      .then((data) => {
+        setProduct({
+          id: data.id,
+          title: data.title || "",
+          description: data.description || "",
+          category: data.category || "",
+          price: data.price ?? 0,
+          stock: data.stock ?? 0,
+          discount: data.discount ?? 0,
+          active: !!data.active,
+        });
+      })
+      .catch((error) => toast.error(getErrorMessage(error, "Could not load the product")));
   }, [id]);
-  
+
+  useEffect(() => {
+    fetchCategories()
+      .then((list) => {
+        if (Array.isArray(list) && list.length > 0) setCategories(list.map((c) => c.name));
+      })
+      .catch(() => {});
+  }, []);
+
+  // The discounted price is computed by the server; shown here for reference
+  const discountPrice = (Number(product.price || 0) * (100 - Number(product.discount || 0)) / 100).toFixed(2);
+  const categoryOptions = product.category && !categories.includes(product.category)
+    ? [product.category, ...categories]
+    : categories;
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -43,44 +67,31 @@ const EditProduct = () => {
   };
 
   const handleCheckboxChange = (e) => {
-    setProduct({ ...product, isActive: e.target.checked });
+    setProduct({ ...product, active: e.target.checked });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append("id", product.id);
     formData.append("title", product.title);
     formData.append("description", product.description);
     formData.append("category", product.category);
     formData.append("price", product.price);
     formData.append("stock", product.stock);
     formData.append("discount", product.discount);
-    formData.append("discountPrice", product.discountPrice);
-    formData.append("isActive", product.isActive);
+    formData.append("active", product.active);
 
     if (file) {
-      formData.append("file", file);
+      formData.append("image", file);
     }
 
     try {
-    
-      const response = await axiosInstance.post("/admin/updateProduct", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-     
-      if (response.status === 200) {
-        toast.success("Product updated successfully!");
-        navigate("/myproducts");
-      } else {
-        toast.error("Failed to update product. Try again!");
-      }
+      await updateProduct(product.id || id, formData);
+      toast.success("Product updated successfully!");
+      navigate("/myproducts");
     } catch (error) {
-      toast.error("An error occurred. Please try again!");
+      toast.error(getErrorMessage(error, "An error occurred. Please try again!"));
       console.error("Error updating product:", error);
     }
   };
@@ -120,10 +131,9 @@ const EditProduct = () => {
             onChange={handleInputChange}
             required
           >
-            <option value="vegetables">Vegetables</option>
-            <option value="fruits">Fruits</option>
-            <option value="millets">Millets</option>
-            <option value="non-veg">Non-Veg</option>
+            {categoryOptions.map((name) => (
+              <option key={name} value={name}>{name}</option>
+            ))}
           </select>
         </div>
 
@@ -135,6 +145,8 @@ const EditProduct = () => {
             name="price"
             value={product.price}
             onChange={handleInputChange}
+            min="0.01"
+            step="0.01"
             required
           />
         </div>
@@ -147,6 +159,7 @@ const EditProduct = () => {
             name="stock"
             value={product.stock}
             onChange={handleInputChange}
+            min="0"
             required
           />
         </div>
@@ -171,9 +184,8 @@ const EditProduct = () => {
             className={styles.inputs}
             type="number"
             name="discountPrice"
-            value={product.discountPrice}
-            onChange={handleInputChange}
-            required
+            value={discountPrice}
+            readOnly
           />
         </div>
 
@@ -182,8 +194,8 @@ const EditProduct = () => {
             <input
               className={styles.inputs}
               type="checkbox"
-              name="isActive"
-              checked={product.isActive}
+              name="active"
+              checked={product.active}
               onChange={handleCheckboxChange}
             />
             Active
@@ -192,7 +204,7 @@ const EditProduct = () => {
 
         <div className={styles.formGroup}>
           <label>Product Image</label>
-          <input type="file" onChange={handleFileChange} />
+          <input type="file" accept="image/*" onChange={handleFileChange} />
         </div>
 
         <button type="submit" className={styles.submitBtn}>

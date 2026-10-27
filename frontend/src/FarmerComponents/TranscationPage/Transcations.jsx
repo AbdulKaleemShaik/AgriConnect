@@ -1,30 +1,36 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./TransactionPage.module.css";
 import NavBar from "../NavBar/NavBar";
 import codimg from "../../assets/Images/cod.jpg"
 import netbanking from "../../assets/Images/netbanking.jpg"
-const transactions = [
-  {
-    productName: "Product 1",
-    name: "Farmer 1",
-    phoneNumber: "1234567890",
-    address: "123 Main St, City",
-    quantity: 10,
-    amount: "₹1000",
-    paymentOption: "Paytm",
-  },
-  {
-    productName: "Product 2",
-    name: "Farmer 2",
-    phoneNumber: "0987654321",
-    address: "456 Market St, City",
-    quantity: 20,
-    amount: "₹2000",
-    paymentOption: "COD",
-  },
-];
+import { toast } from "react-toastify";
+import { getAllOrders } from "../../Service/FarmerService";
+import { getErrorMessage } from "../../Service/AxiosInstant";
+
+// Maps a farmer-side OrderResponse to a transaction row (cancelled orders are not transactions)
+const toTransaction = (order) => {
+  const a = order.shippingAddress || {};
+  return {
+    id: order.id,
+    productName: order.product?.title,
+    name: [a.firstName, a.lastName].filter(Boolean).join(" "),
+    phoneNumber: a.mobileNo,
+    address: [a.address, a.city, a.state, a.pincode].filter(Boolean).join(", "),
+    quantity: order.quantity,
+    amount: `₹${order.totalPrice}`,
+    paymentOption: order.paymentType,
+  };
+};
 
 function TransactionPage(){
+  const [transactions, setTransactions] = useState([]);
+
+  useEffect(() => {
+    getAllOrders()
+      .then((orders) => setTransactions(orders.filter((o) => o.status !== "CANCELLED").map(toTransaction)))
+      .catch((error) => toast.error(getErrorMessage(error, "Failed to load transactions")));
+  }, []);
+
   return (
     <div className={styles.container}>
      <NavBar />
@@ -42,8 +48,8 @@ function TransactionPage(){
             </tr>
           </thead>
           <tbody>
-            {transactions.map((transaction, index) => (
-              <tr key={index}>
+            {transactions.map((transaction) => (
+              <tr key={transaction.id}>
                 <td>{transaction.productName}</td>
                 <td>{transaction.name}</td>
                 <td>{transaction.phoneNumber}</td>

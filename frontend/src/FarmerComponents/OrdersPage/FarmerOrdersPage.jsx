@@ -2,7 +2,8 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField, Button, Select, MenuItem } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
-import { getAllOrders, updateOrderStatus,getOrderById } from '../../Service/FarmerService';  
+import { getAllOrders, updateOrderStatus, getOrderById, ORDER_STATUSES } from '../../Service/FarmerService';
+import { getErrorMessage } from '../../Service/AxiosInstant';
 import 'react-toastify/dist/ReactToastify.css';
 import Navbar from '../NavBar/NavBar'
 import Updating from './Updating.jsx';
@@ -18,10 +19,8 @@ const columns = [
 ];
 
 
-const statusOptions = [
-  'Order placed', 'Order confirmed', 'Order processing', 'Shipped/Dispatched',
-  'In transit', 'Out for delivery', 'Delivered'
-];
+// Backend OrderStatus values with their display labels
+const statusOptions = ORDER_STATUSES;
 
 export default function OrderTable() {
   const [orders, setOrders] = useState([]);
@@ -34,11 +33,10 @@ export default function OrderTable() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await getAllOrders();
-        setOrders(response.data.orders);
+        setOrders(await getAllOrders());
       } catch (e) {
-        toast.error('Failed to fetch the orders', {
-          position: toast.POSITION.TOP_RIGHT,
+        toast.error(getErrorMessage(e, 'Failed to fetch the orders'), {
+          position: 'top-right',
         });
       }
     };
@@ -53,16 +51,22 @@ export default function OrderTable() {
     });
   };
 
-  const handleUpdateStatus = async (orderId,temp) => {
-    const updatedStatus = orderStatuses[temp];
+  const handleUpdateStatus = async (orderId) => {
+    const updatedStatus = orderStatuses[orderId];
     if (updatedStatus!=null) {
       setUpdating(true);
       try {
-        const response = await updateOrderStatus(orderId, updatedStatus);
-        toast.success(`Order ${orderId} status updated`);
+        const updated = await updateOrderStatus(orderId, updatedStatus);
+        setOrders((prev) => prev.map((o) => (o.id === updated.id ? updated : o)));
+        setOrderStatuses((prev) => {
+          const next = { ...prev };
+          delete next[orderId];
+          return next;
+        });
+        toast.success(`Order ${updated.orderNumber} status updated to "${updated.statusLabel}"`);
     } catch (error) {
         
-        toast.error("Failed to update order status");
+        toast.error(getErrorMessage(error, "Failed to update order status"));
     }
     finally{
       setUpdating(false);
@@ -87,18 +91,18 @@ export default function OrderTable() {
   
   const handleSearch = async () => {
     if (searchQuery.trim() === "") {
-      toast.error("Please enter a valid order ID to search");
+      toast.error("Please enter a valid order number to search");
       
       return;
     }
   
     try {
-      const response = await getOrderById(searchQuery); 
-      setOrders([response.data]);
+      const order = await getOrderById(searchQuery);
+      setOrders([order]);
       
     } catch (error) {
       console.error("Error fetching order:", error);
-      toast.error("Order not found ");
+      toast.error(getErrorMessage(error, "Order not found"));
     }
   };
   
@@ -136,30 +140,31 @@ export default function OrderTable() {
             {orders
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((order) => (
-                <TableRow hover role="checkbox" tabIndex={-1} key={order.orderId}>
+                <TableRow hover role="checkbox" tabIndex={-1} key={order.id}>
                   
                   {/* Order ID */}
-                  <TableCell className="orderId" sx={{ maxWidth: '250px' }}>{order.orderId}</TableCell>
+                  <TableCell className="orderId" sx={{ maxWidth: '250px' }}>{order.orderNumber}</TableCell>
 
                   {/* Product Details */}
                   <TableCell className="productDetails" sx={{ maxWidth: 150, wordWrap: 'break-word', overflow: 'hidden' }}>
-                    <div><strong>Title:</strong> {order.product.title}</div>
-                    <div><strong>Price:</strong> ${order.product.price}</div>
+                    <div><strong>Title:</strong> {order.product?.title}</div>
+                    <div><strong>Quantity:</strong> {order.quantity}</div>
+                    <div><strong>Price:</strong> ${order.totalPrice}</div>
                   </TableCell>
 
                   {/* Customer Name */}
                   <TableCell className="customerName" sx={{ maxWidth: 130 }}>
-                    {order.orderAddress.firstName} {order.orderAddress.lastName}
+                    {order.shippingAddress?.firstName} {order.shippingAddress?.lastName}
                   </TableCell>
 
                   {/* Mobile Number */}
                   <TableCell className="mobileNumber" sx={{ maxWidth: 130 }}>
-                    {order.orderAddress.mobileNo}
+                    {order.shippingAddress?.mobileNo}
                   </TableCell>
 
                   {/* Delivery Address */}
                   <TableCell className="deliveryAddress" sx={{ maxWidth: 250, wordWrap: 'break-word', overflow: 'hidden' }}>
-                    {order.orderAddress.address}, {order.orderAddress.city}, {order.orderAddress.pincode}, {order.orderAddress.state}
+                    {order.shippingAddress?.address}, {order.shippingAddress?.city}, {order.shippingAddress?.pincode}, {order.shippingAddress?.state}
                   </TableCell>
 
                   {/* Status Dropdown */}
@@ -167,13 +172,14 @@ export default function OrderTable() {
                     <Select
                       className="statusDropdown"
                       
-                      value={orderStatuses[order.orderId] || (statusOptions.includes(order.status) ? order.status : statusOptions[0])} // Ensure valid status
-                      onChange={(e) => handleStatusChange(e, order.orderId)} // Capture status change
+                      value={orderStatuses[order.id] || order.status || statusOptions[0].value}
+                      onChange={(e) => handleStatusChange(e, order.id)} // Capture status change
+                      disabled={order.status === 'DELIVERED' || order.status === 'CANCELLED'}
                       sx={{ width: 150 }}
                     >
-                      {statusOptions.map((status, index) => (
-                        <MenuItem key={index} value={status}>
-                          {status}
+                      {statusOptions.map((status) => (
+                        <MenuItem key={status.value} value={status.value}>
+                          {status.label}
                         </MenuItem>
                       ))}
                     </Select>
@@ -190,7 +196,8 @@ export default function OrderTable() {
                         padding: '8px 12px',
                         borderRadius: '4px'
                       }}
-                      onClick={() => handleUpdateStatus(order.id,order.orderId)} 
+                      onClick={() => handleUpdateStatus(order.id)}
+                      disabled={order.status === 'DELIVERED' || order.status === 'CANCELLED'}
                     >
                       Update
                     </Button>
