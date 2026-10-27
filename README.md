@@ -1,114 +1,164 @@
-# 🌾 AgriConnect
+# 🌾 AgriConnect: Farmer-to-Customer Marketplace
 
-**AgriConnect** is a **full-stack web application** that digitally connects farmers, buyers, and stakeholders to simplify agricultural workflows. It provides a marketplace for agricultural products, user management, and seamless communication between different roles in the agriculture ecosystem.
+[![CI](https://github.com/AbdulKaleemShaik/AgriConnect/actions/workflows/ci.yml/badge.svg)](https://github.com/AbdulKaleemShaik/AgriConnect/actions/workflows/ci.yml)
+![Java](https://img.shields.io/badge/Java-21-orange)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5-6DB33F)
+![MySQL](https://img.shields.io/badge/MySQL-8-4479A1)
 
-The system is designed to modernize traditional farming practices by providing **digital tools for farmers**, enabling better visibility, access to buyers, and efficient management of their products.
+AgriConnect lets farmers sell produce directly to customers without middlemen. Farmers list products, customers browse, add to cart and check out, and farmers fulfil orders through a status workflow. Admins manage users, categories and all orders.
 
-This project contains:
-
-📌 **Spring Boot Backend API**  
-📌 **React Frontend Web App**
-
----
-
-## 🚀 Table of Contents
-
-1. 🧠 About  
-2. 🚦 Features  
-3. 🧩 Architecture Overview  
-4. 📦 Tech Stack  
-5. 📁 Project Structure  
-6. ⚙️ Requirements  
-7. 🛠️ Installation & Setup  
-   - Backend  
-   - Frontend  
-8. ▶️ Running the System  
-9. 🧪 Testing APIs  
-10. 🗂 Environment Variables  
-11. 🤝 Contributing  
-12. 📜 License  
+The backend is a **Spring Boot 3 REST API** (a layered modular monolith) secured with **Spring Security + JWT**, backed by **MySQL** with **Flyway** migrations. The frontend is a **React (Vite)** app.
 
 ---
 
-## 🧠 About
+## ✨ Highlights
 
-AgriConnect is designed to **empower farmers and buyers** by providing a digital marketplace for agricultural products. It addresses common challenges in the agriculture sector such as:
-
-- Limited access to buyers and markets  
-- Lack of transparency in pricing  
-- Manual tracking of products and inventory  
-- Inefficient communication between stakeholders  
-
-The system allows:
-
-- **Farmers** to create and manage product listings, check demand, and interact with buyers.  
-- **Buyers** to browse, search, and purchase agricultural products directly from farmers.  
-- **Admins** to manage users, products, and monitor system activities.  
-
-AgriConnect uses a **RESTful Spring Boot backend** for business logic and database operations, with a **React frontend** providing a responsive and user-friendly interface.
+| Area | What it does |
+|---|---|
+| **Overselling protection** | Checkout runs in one transaction and products carry an `@Version` column (optimistic locking). When several customers buy the last unit at the same moment, exactly one succeeds and the rest get `409 Conflict`; stock never goes negative. Covered by a concurrent integration test. |
+| **Security** | Stateless JWT auth, role-based access (`CUSTOMER`, `FARMER`, `ADMIN`) enforced at URL level and with `@PreAuthorize`, BCrypt passwords, **account lockout** after 5 failed logins (15 min), and password reset via a **hashed, expiring OTP** with an attempt limit. |
+| **Clean API design** | Request/response DTOs with Jakarta Bean Validation, a global `@RestControllerAdvice` returning one consistent error format, and paginated product search with JPA Specifications (category + text query). |
+| **Database migrations** | Schema owned by **Flyway** (`db/migration`); Hibernate runs with `ddl-auto=validate`, so drift between entities and the schema fails fast. CI applies the migrations to a real MySQL 8 and runs the whole test suite against it. |
+| **Async email** | Order and password-reset emails are published as events and sent `@Async` after the transaction commits, so a slow mail server never blocks a checkout. |
+| **File uploads** | Product and profile images with content-type allow-list (JPEG/PNG/WEBP/GIF). |
+| **Ops-ready** | Multi-stage Dockerfile (non-root, healthcheck), Docker Compose stack, Spring Boot Actuator health endpoint, OpenAPI/Swagger UI, all config from environment variables (no committed secrets). |
 
 ---
 
-## 🚦 Features
+## 🏗️ Architecture
 
-✔ **User Roles & Authentication**: Farmer, Buyer, Admin, with secure login and JWT-based authentication.  
-✔ **Product Management**: Add, edit, delete, and view products.  
-✔ **Search & Filter**: Find products by category, price, and availability.  
-✔ **RESTful API Integration**: Backend endpoints fully integrated with frontend.  
-✔ **Responsive UI**: Works on desktop and mobile devices.  
-✔ **Database Integration**: Configurable with MySQL, PostgreSQL, or MongoDB.  
-✔ **Security**: Password encryption, role-based authorization, and input validation.  
+```mermaid
+flowchart LR
+    UI[React + Vite client] -->|JSON over HTTPS, Bearer JWT| SEC[Spring Security<br/>JWT filter + role rules]
+    SEC --> C[REST controllers<br/>auth · products · categories · cart · orders · users · admin]
+    C --> S[Services<br/>transactions, business rules]
+    S --> R[Spring Data JPA repositories]
+    R --> DB[(MySQL 8<br/>Flyway-managed schema)]
+    S -. domain events .-> M[Async email sender]
+    S --> FS[(Image storage)]
+```
 
----
-
-## 🧩 Architecture Overview
-
-The project follows a **layered architecture**:
-
-1. **Frontend (React)**  
-   - Pages for login/signup, product browsing, dashboard, and admin panel.  
-   - Communicates with backend via REST API.  
-
-2. **Backend (Spring Boot)**  
-   - Controllers: Handle incoming requests and route to services.  
-   - Services: Implement business logic.  
-   - Repositories: Interact with the database.  
-   - Security: JWT authentication and role-based authorization.  
-
-3. **Database**  
-   - Stores user information, product listings, roles, and system logs.  
-   - Can be switched between relational (MySQL/PostgreSQL) or NoSQL (MongoDB).  
+Packages are organised **by feature** (`auth`, `catalog`, `cart`, `order`, `user`, `admin`, `security`, `notification`, `common`), each with its own controller, service, repository and DTOs.
 
 ---
 
-## 📦 Tech Stack
+## 🛠️ Tech Stack
 
-| Layer | Technology |
-|-------|------------|
-| Backend | Spring Boot (Java), Maven/Gradle |
-| Frontend | React (JavaScript), HTML, CSS, Bootstrap |
-| Database | MongoDB |
-| Authentication | JWT |
-| API | RESTful services |
+- **Backend:** Java 21, Spring Boot 3.5, Spring Web, Spring Security, Spring Data JPA (Hibernate), Bean Validation, JJWT, Spring Mail, Actuator
+- **Database:** MySQL 8, Flyway (H2 in MySQL mode for fast tests)
+- **API docs:** springdoc-openapi (Swagger UI)
+- **Testing:** JUnit 5, Mockito, Spring Boot Test, MockMvc, Spring Security Test
+- **DevOps:** Docker, Docker Compose, GitHub Actions
+- **Frontend:** React, Vite, Axios
+
+---
+
+## 📡 API Overview
+
+Interactive docs: **`http://localhost:8080/swagger-ui.html`** (OpenAPI JSON at `/v3/api-docs`).
+
+| Method & path | Access | Purpose |
+|---|---|---|
+| `POST /api/auth/register/customer` · `/register/farmer` | Public | Register (multipart, optional profile image) |
+| `POST /api/auth/login` | Public | Get a JWT |
+| `POST /api/auth/forgot-password` · `/reset-password` | Public | OTP-based password reset |
+| `GET /api/products?category=&q=&page=&size=` | Public | Paginated product search |
+| `GET /api/products/{id}` | Public | Product details |
+| `GET /api/products/mine` | Farmer | Farmer's own listings |
+| `POST /api/products` · `PUT /api/products/{id}` | Farmer | Create / update a listing (multipart with image) |
+| `DELETE /api/products/{id}` | Farmer, Admin | Soft-delete a listing (order history is kept) |
+| `GET /api/categories` · `/all` | Public · Admin | Categories; admins manage them with `POST/PUT/DELETE` |
+| `GET /api/cart` · `POST /api/cart/items` · `PUT/DELETE /api/cart/items/{productId}` · `DELETE /api/cart` | Customer | Cart management |
+| `POST /api/orders` | Customer | Check out the cart (atomic, stock-safe) |
+| `GET /api/orders/mine` · `POST /api/orders/{id}/cancel` | Customer | Order history; cancel before shipping (restores stock) |
+| `GET /api/orders/farmer` · `PATCH /api/orders/{id}/status` | Farmer, Admin | Fulfil orders through the status workflow |
+| `GET /api/orders/{id}` · `/number/{orderNumber}` | Owner | Track an order |
+| `GET/PUT /api/users/me` · `PUT /api/users/me/password` | Signed in | Profile and password |
+| `GET /api/admin/users` · `PATCH /api/admin/users/{id}/status` · `GET /api/admin/orders` | Admin | User and order administration |
+
+All errors share one shape: `{ timestamp, status, error, message, path, fieldErrors[] }`.
+
+---
+
+## 🚀 Running Locally
+
+### Option 1: Docker Compose (MySQL + API)
+
+```bash
+cp .env.example .env          # set DB_PASSWORD, MYSQL_ROOT_PASSWORD, JWT_SECRET
+docker compose up --build
+# API: http://localhost:8080  ·  Swagger: http://localhost:8080/swagger-ui.html
+```
+
+### Option 2: Without MySQL (in-memory H2)
+
+```bash
+cd backend
+./mvnw spring-boot:run -Dspring-boot.run.profiles=h2
+```
+
+### Frontend
+
+```bash
+cd frontend
+cp .env.example .env          # VITE_API_URL=http://localhost:8080
+npm install
+npm run dev                   # http://localhost:5173
+```
+
+> The React client is being updated to the new `/api/*` endpoints listed above.
+
+### Environment variables (backend)
+
+| Variable | Default | Notes |
+|---|---|---|
+| `DB_URL` / `DB_USERNAME` / `DB_PASSWORD` | local MySQL | JDBC connection |
+| `JWT_SECRET` | random per start | 32+ characters; set it in any shared environment |
+| `JWT_EXPIRATION` | `PT24H` | ISO-8601 duration |
+| `CORS_ALLOWED_ORIGINS` | `http://localhost:5173` | Comma-separated |
+| `ADMIN_EMAIL` / `ADMIN_PASSWORD` | empty | Bootstraps an admin account on first start |
+| `MAIL_ENABLED`, `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM` | disabled | SMTP for order and reset emails |
+| `UPLOAD_DIR` | `uploads` | Image storage path |
+| `JPA_DDL_AUTO` | `validate` | Schema is managed by Flyway |
+
+---
+
+## 🧪 Testing
+
+```bash
+cd backend
+./mvnw test
+```
+
+**70 tests** across unit tests (services with Mockito, JWT service) and full-stack integration tests (MockMvc through the real security filter chain):
+
+| Suite | Covers |
+|---|---|
+| `AuthServiceTest`, `AuthIntegrationTest` | Registration, login, lockout after repeated failures, OTP password reset |
+| `JwtServiceTest` | Token issue, expiry, tampering |
+| `ProductServiceTest`, `ProductControllerWebMvcTest` | Listing CRUD, ownership rules, validation, search |
+| `CartServiceTest`, `OrderServiceTest` | Cart rules, checkout, cancellation, status transitions |
+| `MarketplaceFlowIntegrationTest` | End-to-end: farmer lists → customer buys → farmer fulfils |
+| `ConcurrentCheckoutIntegrationTest` | 5 simultaneous buyers for the last unit → exactly 1 order, 4 × `409`, stock = 0 |
+| `AccessControlIntegrationTest` | 401/403 rules for every role |
+
+CI runs the suite twice: on H2 for speed, and on **MySQL 8 with Flyway + schema validation** to prove the migrations match the entities.
 
 ---
 
 ## 📁 Project Structure
 
-```txt
-AgriConnect/
-├── AgriCoonectBackEnd/        # Java Spring Boot API
-│   ├── src/
-│   │   ├── main/java/...       # Controllers, Services, Models, Repositories
-│   │   └── main/resources/
-│   │       └── application.properties
-│   └── pom.xml
-├── AgriConnectFrontend/       # React frontend
-│   ├── public/
-│   └── src/
-│       ├── components/        # Reusable UI components
-│       ├── pages/             # Pages like Home, Dashboard, Login
-│       ├── App.js
-│       └── index.js
-├── README.md
-└── .gitignore
+```
+backend/
+  src/main/java/com/agriconnect/
+    auth/ catalog/ cart/ order/ user/ admin/     # feature packages
+    security/                                     # JWT filter, security config
+    notification/                                 # async email events
+    common/                                       # errors, paging, file storage
+    config/                                       # app properties, OpenAPI, async
+  src/main/resources/db/migration/                # Flyway migrations
+  Dockerfile
+frontend/                                         # React (Vite) client
+docker-compose.yml
+.github/workflows/ci.yml
+```
