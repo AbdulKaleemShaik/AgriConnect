@@ -9,6 +9,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -117,6 +118,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleOptimisticLock(ObjectOptimisticLockingFailureException ex,
                                                          HttpServletRequest request) {
         return build(HttpStatus.CONFLICT, "The resource was modified concurrently, please retry", request, List.of());
+    }
+
+    /** Lock timeouts and deadlock victims (e.g. MySQL error 1213) are transient: ask the client to retry. */
+    @ExceptionHandler(PessimisticLockingFailureException.class)
+    public ResponseEntity<ApiError> handlePessimisticLock(PessimisticLockingFailureException ex,
+                                                          HttpServletRequest request) {
+        log.warn("Lock conflict: {}", ex.getMostSpecificCause().getMessage());
+        return build(HttpStatus.CONFLICT, "The resource is busy, please retry", request, List.of());
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

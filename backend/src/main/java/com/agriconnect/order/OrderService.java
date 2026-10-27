@@ -42,10 +42,13 @@ public class OrderService {
     /**
      * Checks out the customer's cart atomically: validates availability, decrements stock,
      * creates one order per cart line and empties the cart. Any failure rolls back everything.
-     * Concurrent checkouts of the same product are guarded by the product's @Version column.
+     * Concurrent checkouts of the same product are serialised by row locks taken in a fixed
+     * (id) order, and the product's @Version column remains as a second line of defence.
      */
     @Transactional
     public List<OrderResponse> placeOrder(Long customerId, PlaceOrderRequest request) {
+        // Lock first so the cart query below sees current stock and holds the rows until commit.
+        cartItemRepository.lockProductsInCart(customerId);
         List<CartItem> cart = cartItemRepository.findByCustomerIdOrderByIdAsc(customerId);
         if (cart.isEmpty()) {
             throw new BadRequestException("Your cart is empty");
