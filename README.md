@@ -106,7 +106,7 @@ npm install
 npm run dev                   # http://localhost:5173
 ```
 
-> The React client is being updated to the new `/api/*` endpoints listed above.
+> The React client talks to the `/api/*` endpoints above through a single Axios instance (`frontend/src/Service/AxiosInstant.js`) whose base URL comes from `VITE_API_URL` (default `http://localhost:8080`); it attaches the JWT and resolves image paths such as `/images/products/...` against that base URL.
 
 ### Environment variables (backend)
 
