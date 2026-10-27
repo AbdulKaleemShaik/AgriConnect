@@ -16,7 +16,7 @@ import ProductsPage from './FarmerComponents/MyProductPage/MyProductPage'
 import AddProduct from './FarmerComponents/AddProduct/AddProduct'
 import Transcations from './FarmerComponents/TranscationPage/Transcations'
 import FarmerProfile from './FarmerComponents/ProfilePage/ProfilePage'
-import AskEmailPage from './ForgetPassWord/AskEmailPage';
+import AskEmailPage from './ForgetPassword/AskEmailPage';
 import ResetPassword from './ForgetPassword/ResetPasswordPage';
 import AdminProductPage from './FarmerComponents/AddedProducts/AdminProductPage'
 import EditProduct from './FarmerComponents/AddedProducts/EditProductPage';
